@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { PlusCircle, Edit, Truck, Package, Anchor, Building, FileDown, Trash2 } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
-import type { Departure, Status, Carrier } from '@/lib/types';
+import { PlusCircle, Edit, Truck, Package, Anchor, Building, FileDown, Trash2, FileUp } from 'lucide-react';
+import { format, parse, parseISO } from 'date-fns';
+import type { Departure, Status, Carrier, CARRIERS } from '@/lib/types';
 import { initialDepartures } from '@/lib/data';
 import { EditDepartureDialog } from './edit-departure-dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -58,6 +58,7 @@ export default function DepartureDashboard() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deletingDeparture, setDeletingDeparture] = useState<Departure | null>(null);
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // Sort initial data by collection time
@@ -159,6 +160,73 @@ export default function DepartureDashboard() {
     
     XLSX.writeFile(workbook, `departures_export_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
   };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = e.target?.result;
+        const workbook = XLSX.read(data, { type: 'binary' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const json: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+        const newDepartures: Departure[] = json.map((row, index) => {
+          // Excel date serial number to JS Date
+          const collectionTime = XLSX.SSF.parse_date_code(row['Collection Time']);
+          
+          return {
+            id: `import-${new Date().getTime()}-${index}`,
+            carrier: row['Carrier'] as Carrier,
+            destination: row['Destination'],
+            via: row['Via'] === 'N/A' ? undefined : row['Via'],
+            trailerNumber: row['Trailer'],
+            collectionTime: new Date(collectionTime.y, collectionTime.m - 1, collectionTime.d, collectionTime.H, collectionTime.M, collectionTime.S).toISOString(),
+            bayDoor: Number(row['Bay']),
+            sealNumber: row['Seal No.'] === 'N/A' ? undefined : row['Seal No.'],
+            scheduleNumber: row['Schedule No.'],
+            status: row['Status'] as Status,
+          };
+        }).filter(d => d.carrier && d.destination && d.collectionTime && CARRIERS.includes(d.carrier)); // Basic validation
+
+        if(newDepartures.length > 0) {
+            setDepartures(prev => {
+                const updated = [...prev, ...newDepartures];
+                updated.sort((a, b) => new Date(a.collectionTime).getTime() - new Date(b.collectionTime).getTime());
+                return updated;
+            });
+            toast({
+                title: "Import Successful",
+                description: `${newDepartures.length} departures have been added from the Excel file.`,
+            });
+        } else {
+             toast({
+                variant: "destructive",
+                title: "Import Failed",
+                description: "No valid departures found in the file. Please check the file format and content.",
+            });
+        }
+      } catch (error) {
+        console.error("Error importing file:", error);
+        toast({
+            variant: "destructive",
+            title: "Import Error",
+            description: "There was an error processing your file. Please ensure it is a valid Excel file.",
+        });
+      }
+    };
+    reader.readAsBinaryString(file);
+    
+    // Reset file input
+    event.target.value = '';
+  };
   
   const sortedDepartures = useMemo(() => {
       return [...departures].sort((a, b) => {
@@ -173,6 +241,11 @@ export default function DepartureDashboard() {
       <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle>Departures</CardTitle>
         <div className="flex items-center gap-2">
+            <input type="file" ref={fileInputRef} onChange={handleFileImport} accept=".xlsx, .xls" className="hidden" />
+            <Button size="sm" variant="outline" onClick={handleImportClick}>
+              <FileUp className="mr-2 h-4 w-4" />
+              Import from Excel
+            </Button>
             <Button size="sm" variant="outline" onClick={handleExport}>
               <FileDown className="mr-2 h-4 w-4" />
               Export to Excel
@@ -270,3 +343,5 @@ export default function DepartureDashboard() {
     </Card>
   );
 }
+
+    
