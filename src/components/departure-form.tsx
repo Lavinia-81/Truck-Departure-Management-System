@@ -34,11 +34,20 @@ export function DepartureForm({ departure, onSave, onCancel }: DepartureFormProp
   const defaultValues: Partial<DepartureFormValues> = departure
     ? {
         ...departure,
+        via: departure.via || '',
+        sealNumber: departure.sealNumber || '',
         collectionTime: format(parseISO(departure.collectionTime), "yyyy-MM-dd'T'HH:mm"),
       }
     : {
+        carrier: CARRIERS[0],
         status: 'Waiting',
         collectionTime: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+        destination: '',
+        trailerNumber: '',
+        bayDoor: 1,
+        scheduleNumber: '',
+        via: '',
+        sealNumber: '',
       };
   
   const form = useForm<DepartureFormValues>({
