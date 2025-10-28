@@ -67,7 +67,7 @@ export default function RouteOptimizerPage() {
               <FormField control={form.control} name="via" render={({ field }) => (<FormItem><FormLabel>First Stop (Via)</FormLabel><FormControl><Input placeholder="e.g., Birmingham (optional)" {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField control={form.control} name="trafficData" render={({ field }) => (<FormItem><FormLabel>Traffic Data</FormLabel><FormControl><Textarea placeholder="Provide any known traffic issues (optional)" {...field} /></FormControl><FormMessage /></FormItem>)} />
               <Button type="submit" disabled={isLoading} className="w-full">
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Route className="mr-2 h-4 w-4" />}
                 Optimize Route
               </Button>
             </form>

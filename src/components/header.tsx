@@ -1,29 +1,47 @@
 import Link from "next/link"
-import { Truck } from "lucide-react"
+import { Truck, Route } from "lucide-react"
 import Clock from "./clock"
-import { Separator } from "./ui/separator"
 import { Button } from "./ui/button"
 
 export default function Header() {
   return (
-    <header className="sticky top-0 flex h-auto flex-col items-start gap-2 border-b bg-background px-4 py-3 md:px-6 z-50">
-      <div className="flex w-full items-center justify-between">
+    <header className="sticky top-0 z-50 flex h-auto flex-col items-center gap-3 border-b bg-background px-4 py-3 md:px-6">
+      {/* Main header for larger screens */}
+      <div className="hidden w-full items-center md:flex">
+        <div className="flex-1" />
+        <div className="flex flex-1 flex-col items-center justify-center gap-1">
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
             Truck Departure Dashboard
           </h1>
-          <div className="flex items-center gap-4">
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/optimize">
-                  Route Optimizer
-                </Link>
-              </Button>
-          </div>
+          <Clock />
+        </div>
+        <div className="flex flex-1 items-center justify-end gap-4">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/optimize">
+              <Route className="mr-2 h-4 w-4" />
+              Route Optimizer
+            </Link>
+          </Button>
+        </div>
       </div>
-      <div className="flex w-full items-center justify-between text-sm text-muted-foreground">
+
+      {/* Mobile header */}
+      <div className="flex w-full flex-col items-center gap-3 md:hidden">
+        <h1 className="text-xl font-bold tracking-tight">
+          Truck Departure Dashboard
+        </h1>
         <Clock />
-        <div className="flex items-center gap-2">
-            <Truck className="h-4 w-4" />
-            <span>Depot Dispatch Display</span>
+        <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Truck className="h-4 w-4" />
+                <span>Depot Dispatch</span>
+            </div>
+            <Button variant="outline" size="sm" asChild>
+                <Link href="/optimize">
+                <Route className="mr-2 h-4 w-4" />
+                Optimizer
+                </Link>
+            </Button>
         </div>
       </div>
     </header>
