@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Edit, Truck, Package, Anchor, Building, Trash2 } from 'lucide-react';
+import { Edit, Truck, Package, Anchor, Building, Trash2, PlusCircle } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import type { Departure, Status, Carrier, CARRIERS } from '@/lib/types';
 import { initialDepartures } from '@/lib/data';
@@ -252,7 +252,6 @@ export default function DepartureDashboard() {
     <>
     <Header actions={
         <DashboardActions 
-            onAddNew={handleAddNew}
             onExport={handleExport}
             onImportClick={handleImportClick}
         />
@@ -261,6 +260,10 @@ export default function DepartureDashboard() {
         <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle>Departures</CardTitle>
+            <Button size="sm" onClick={handleAddNew}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Departure
+            </Button>
         </CardHeader>
         <CardContent>
             <input type="file" ref={fileInputRef} onChange={handleFileImport} accept=".xlsx, .xls" className="hidden" />
