@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { PlusCircle, Edit, Truck, Package, Ship, Anchor } from 'lucide-react';
+import { PlusCircle, Edit, Truck, Package, Anchor, Building } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import type { Departure, Status, Carrier } from '@/lib/types';
 import { initialDepartures } from '@/lib/data';
@@ -21,11 +22,21 @@ const statusColors: Record<Status, string> = {
   Delayed: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/50 dark:text-orange-300 dark:border-orange-800',
 };
 
-const carrierStyles: Record<Carrier, { className: string; icon: React.ComponentType<{ className?: string }> }> = {
+interface CarrierStyle {
+    className: string;
+    icon?: React.ComponentType<{ className?: string }>;
+    iconUrl?: string;
+}
+
+const carrierStyles: Record<Carrier, CarrierStyle> = {
     'Royal Mail': { className: 'bg-red-500 hover:bg-red-600 text-white border-red-600', icon: Package },
     'EVRI': { className: 'bg-sky-500 hover:bg-sky-600 text-white border-sky-600', icon: Truck },
-    'Yodel': { className: 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700', icon: Ship },
+    'Yodel': { 
+        className: 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700', 
+        iconUrl: 'https://is2-ssl.mzstatic.com/image/thumb/Purple112/v4/c2/5d/ce/c25dce82-a611-5b02-4e4f-81b2d9d6ad97/AppIcon-0-0-1x_U007emarketing-0-0-0-10-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png'
+    },
     'McBurney': { className: 'bg-purple-500 hover:bg-purple-600 text-white border-purple-600', icon: Anchor },
+    'Montgomery': { className: 'bg-orange-500 hover:bg-orange-600 text-white border-orange-600', icon: Building },
 };
 
 export default function DepartureDashboard() {
@@ -123,12 +134,13 @@ export default function DepartureDashboard() {
               {sortedDepartures.length > 0 ? (
                 sortedDepartures.map(d => {
                   const carrierStyle = carrierStyles[d.carrier];
-                  const Icon = carrierStyle.icon;
+                  const IconComponent = carrierStyle.icon;
                   return (
                     <TableRow key={d.id} className={cn('transition-colors', statusColors[d.status])}>
                       <TableCell>
                         <Badge className={cn('flex items-center gap-2', carrierStyle.className)}>
-                          <Icon className="h-4 w-4" />
+                          {IconComponent && <IconComponent className="h-4 w-4" />}
+                          {carrierStyle.iconUrl && <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={16} height={16} className="rounded-sm" />}
                           <span>{d.carrier}</span>
                         </Badge>
                       </TableCell>
