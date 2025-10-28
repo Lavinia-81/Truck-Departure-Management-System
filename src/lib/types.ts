@@ -1,0 +1,18 @@
+export const STATUSES = ['Waiting', 'Loading', 'Departed', 'Cancelled', 'Delayed'] as const;
+export type Status = typeof STATUSES[number];
+
+export const CARRIERS = ['Royal Mail', 'EVRI', 'Yodel', 'McBurney'] as const;
+export type Carrier = typeof CARRIERS[number];
+
+export interface Departure {
+  id: string;
+  carrier: Carrier;
+  destination: string;
+  via?: string;
+  trailerNumber: string;
+  collectionTime: string; // ISO string format for date and time
+  bayDoor: number;
+  sealNumber?: string;
+  scheduleNumber: string;
+  status: Status;
+}
