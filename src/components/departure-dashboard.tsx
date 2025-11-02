@@ -335,10 +335,6 @@ export default function DepartureDashboard() {
           <Database className="mr-2 h-4 w-4" />
           Seed
       </Button>
-      <Button size="sm" variant="destructive" onClick={() => setIsClearDialogOpen(true)}>
-          <Trash2 className="mr-2 h-4 w-4" />
-          Clear All
-      </Button>
     </div>
   );
 
@@ -350,10 +346,16 @@ export default function DepartureDashboard() {
         <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle>Departures</CardTitle>
-            <Button size="sm" onClick={handleAddNew}>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add Departure
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="destructive" onClick={() => setIsClearDialogOpen(true)}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Clear All
+              </Button>
+              <Button size="sm" onClick={handleAddNew}>
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add Departure
+              </Button>
+            </div>
         </CardHeader>
         <CardContent>
             <input type="file" ref={fileInputRef} onChange={handleFileImport} accept=".xlsx, .xls" className="hidden" />
