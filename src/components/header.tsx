@@ -7,18 +7,16 @@ export default function Header({ actions }: { actions?: React.ReactNode }) {
   return (
     <header className="sticky top-0 z-50 flex h-auto flex-col items-center gap-3 border-b bg-background px-4 py-3 md:px-6">
       {/* Main header for larger screens */}
-      <div className="hidden w-full items-center md:flex">
-        <div className="flex-1">
-          {actions}
-        </div>
-        <div className="flex flex-1 flex-col items-center justify-center gap-1">
+      <div className="hidden w-full items-center justify-between md:flex">
+        <div className="flex flex-col items-start">
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
             Admin Dashboard
           </h1>
           <Clock />
         </div>
-        <div className="flex flex-1 items-center justify-end gap-4">
-           <Button variant="outline" size="sm" asChild>
+        <div className="flex items-center gap-4">
+          {actions}
+          <Button variant="outline" size="sm" asChild>
             <Link href="/display" target="_blank">
               <Monitor className="mr-2 h-4 w-4" />
               Public Display
