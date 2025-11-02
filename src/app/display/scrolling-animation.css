@@ -1,0 +1,22 @@
+@keyframes marquee {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.scrolling-container {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 2%,
+    black 98%,
+    transparent
+  );
+}
+
+.scrolling-content {
+  animation: marquee linear infinite;
+}
