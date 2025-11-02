@@ -432,9 +432,9 @@ export default function DepartureDashboard() {
           </CardContent>
         </Card>
       </main>
-      <footer className="p-4 md:p-8 pt-0">
-        <Card className="bg-white text-black">
-          <CardHeader className="flex flex-row items-center justify-between">
+      <footer className="sticky bottom-0 border-t bg-background p-4 md:px-6 flex-shrink-0">
+        <Card>
+          <CardHeader>
             <CardTitle className="text-lg">Legend</CardTitle>
           </CardHeader>
           <CardContent>

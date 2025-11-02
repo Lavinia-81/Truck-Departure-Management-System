@@ -171,8 +171,8 @@ export default function DisplayPage() {
           </CardContent>
         </Card>
       </main>
-      <footer className="border-t bg-background p-4 md:px-6 flex-shrink-0">
-        <Card className="bg-white text-black">
+      <footer className="sticky bottom-0 border-t bg-background p-4 md:px-6 flex-shrink-0">
+        <Card>
           <CardHeader>
             <CardTitle className="text-lg">Legend</CardTitle>
           </CardHeader>
