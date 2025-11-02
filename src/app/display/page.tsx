@@ -107,8 +107,8 @@ export default function DisplayPage() {
   }
 
   const animationDuration = useMemo(() => {
-    // Adjust speed based on number of rows. ~10 seconds per row for slower animation.
-    return sortedDepartures.length * 10;
+    // Adjust speed based on number of rows. ~20 seconds per row for slower animation.
+    return sortedDepartures.length * 20;
   }, [sortedDepartures.length]);
 
 
@@ -127,7 +127,7 @@ export default function DisplayPage() {
           <CardContent className="p-2 md:p-4 flex-1 flex flex-col overflow-hidden">
             <div className="relative w-full overflow-hidden flex-1" ref={tableContainerRef}>
               <Table>
-                <TableHeader className="bg-primary/90 text-xl md:text-2xl">
+                <TableHeader className="bg-primary/90 text-xl md:text-2xl sticky top-0 z-10">
                   <TableRow className="border-primary/90 hover:bg-primary/90">
                     <TableHead className="text-primary-foreground">Carrier</TableHead>
                     <TableHead className="text-primary-foreground">Via</TableHead>
@@ -138,38 +138,35 @@ export default function DisplayPage() {
                     <TableHead className="text-primary-foreground">Status</TableHead>
                   </TableRow>
                 </TableHeader>
-              </Table>
-              <div className={cn("relative w-full overflow-auto h-full", { 'scrolling-container': isScrolling })}>
-                 <Table className="h-full">
-                    <TableBody 
-                      ref={tableBodyRef} 
-                      className={cn("text-base md:text-lg", { 'scrolling-content': isScrolling })}
-                      style={{ animationDuration: isScrolling ? `${animationDuration}s` : undefined }}
-                    >
-                      {isLoadingDepartures && (
+                 <TableBody 
+                    ref={tableBodyRef} 
+                    className={cn("text-base md:text-lg", { 'scrolling-content': isScrolling })}
+                    style={{ animationDuration: isScrolling ? `${animationDuration}s` : undefined }}
+                  >
+                    {isLoadingDepartures && (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center h-48 text-2xl">
+                          Loading Departures...
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {!isLoadingDepartures && sortedDepartures.length > 0 ? (
+                      <>
+                       {renderTableRows(sortedDepartures)}
+                       {isScrolling && renderTableRows(sortedDepartures)}
+                      </>
+                    ) : (
+                      !isLoadingDepartures && (
                         <TableRow>
                           <TableCell colSpan={7} className="text-center h-48 text-2xl">
-                            Loading Departures...
+                            No Departures Scheduled
                           </TableCell>
                         </TableRow>
-                      )}
-                      {!isLoadingDepartures && sortedDepartures.length > 0 ? (
-                        <>
-                         {renderTableRows(sortedDepartures)}
-                         {isScrolling && renderTableRows(sortedDepartures)}
-                        </>
-                      ) : (
-                        !isLoadingDepartures && (
-                          <TableRow>
-                            <TableCell colSpan={7} className="text-center h-48 text-2xl">
-                              No Departures Scheduled
-                            </TableCell>
-                          </TableRow>
-                        )
-                      )}
-                    </TableBody>
-                 </Table>
-              </div>
+                      )
+                    )}
+                  </TableBody>
+              </Table>
+              <div className={cn("absolute inset-0 w-full h-full pointer-events-none", { 'scrolling-container': isScrolling })}></div>
             </div>
           </CardContent>
         </Card>
