@@ -1,73 +1,58 @@
-# Sistem de Management al Plecărilor de Camioane - Prezentare
+# Truck Departure Management System
 
-## 1. Context și Oportunitate
+## 1. Project Overview
 
-În mediul logistic actual, viteza, precizia și vizibilitatea sunt esențiale. Procesele manuale de gestionare a plecărilor de camioane pot duce la erori, întârzieri în comunicare și o lipsă de vizibilitate în timp real pentru echipele din depozit și pentru șoferi.
+This project is a modern, real-time truck departure management system designed to streamline logistics operations. It replaces manual, error-prone processes with a centralized, digital solution, providing complete visibility and control over truck dispatch schedules.
 
-Acest proiect introduce o **soluție digitală modernă**, menită să transforme modul în care gestionăm programele de plecare, înlocuind procesele tradiționale cu un sistem centralizat, eficient și transparent.
+The primary goal is to reduce administrative overhead, minimize human error, and improve operational flow within the depot by offering a single source of truth for all stakeholders.
 
-## 2. Obiectivul Proiectului
+## 2. Core Features
 
-Crearea unui sistem informatic integrat care oferă **control complet și vizibilitate în timp real** asupra tuturor operațiunilor de plecare a camioanelor, cu scopul de a reduce timpul administrativ, a minimiza erorile umane și a îmbunătăți fluxul operațional în depozit.
+The application is built around three key components:
 
-## 3. Funcționalități Cheie și Beneficii
+### A. Admin Dashboard (`/`)
+The central command center for logistics personnel.
 
-Aplicația este construită în jurul a trei componente principale, fiecare adresând nevoi specifice:
+*   **Centralized Schedule Management (CRUD):** Add, edit, and delete departures through an intuitive interface. All changes are reflected in real-time.
+*   **Bulk Data Import/Export:** Quickly populate schedules by importing data from an **Excel** file and export the current view for reporting and analysis.
+*   **Real-Time Status Updates:** Instantly change a departure's status (e.g., from `Waiting` to `Loading`), ensuring all teams have up-to-the-minute information.
 
----
+### B. Public Display Board (`/display`)
+A "Kiosk" mode screen designed for large monitors in driver waiting areas or the warehouse.
 
-### A. Panoul de Administrare (`/`) - Centrul de Comandă
+*   **Clear, At-a-Glance Information:** Displays a chronologically sorted list of departures with essential details: carrier, destination, time, bay, and status.
+*   **Automatic Real-Time Updates:** The screen refreshes automatically whenever data is changed in the Admin Dashboard, requiring no manual intervention. It also features an auto-scroll function for long lists.
+*   **Visual Cues:** A color-coded legend helps in quickly identifying a truck's status, improving clarity and reducing repetitive questions.
 
-Acesta este instrumentul principal pentru personalul de logistică, oferind control total asupra programărilor.
+### C. Route Optimizer (`/optimize`)
+An advanced, AI-powered tool to assist in planning the most efficient routes.
 
-*   **Management Centralizat (CRUD):**
-    *   **Funcționalitate:** Permite adăugarea, editarea și ștergerea plecărilor printr-o interfață simplă și intuitivă.
-    *   **Beneficiu:** **Eficiență operațională.** Datele sunt gestionate într-un singur loc, eliminând necesitatea documentelor fizice sau a fișierelor multiple. Orice modificare este salvată instantaneu.
+*   **Intelligent Route Suggestions:** Based on the current location, destination, and intermediate stops, the AI system suggests the optimal route, considering factors like traffic to reduce transit time and costs.
 
-*   **Import și Export de Date:**
-    *   **Funcționalitate:** Încărcarea în masă a programelor dintr-un fișier **Excel** și exportarea datelor curente pentru analize și raportări.
-    *   **Beneficiu:** **Economie de timp și flexibilitate.** Permite integrarea rapidă a programelor săptămânale sau lunare și facilitează crearea de rapoarte de performanță.
+## 3. Technology Stack
 
-*   **Actualizări de Status în Timp Real:**
-    *   **Funcționalitate:** Personalul poate schimba statusul unei plecări (ex: din `În așteptare` în `La încărcat`) cu un singur click.
-    *   **Beneficiu:** **Comunicare instantanee.** Toate părțile implicate (management, personal depozit, șoferi) văd aceeași informație actualizată, fără întârzieri.
+The project is built on a modern, robust, and scalable technology foundation:
 
----
+*   **Framework:** **Next.js** (React) - For a fast, server-rendered user interface.
+*   **Database:** **Firebase Firestore** - For a real-time, serverless NoSQL database.
+*   **Artificial Intelligence:** **Genkit (Google AI)** - Powers the route optimization feature.
+*   **UI/Styling:** **Tailwind CSS** & **shadcn/ui** - For a professional, responsive, and modern design system.
 
-### B. Panoul Public de Afișare (`/display`) - Transparență pentru Toți
+## 4. Getting Started
 
-Acesta este un ecran de tip "Kiosk", proiectat pentru a fi afișat pe monitoare mari în zonele de așteptare ale șoferilor sau în depozit.
+To run the project locally, follow these steps:
 
-*   **Vizualizare Clară și Concisă:**
-    *   **Funcționalitate:** Afișează lista plecărilor, sortată cronologic, cu informații esențiale: transportator, destinație, ora, poarta și statusul curent.
-    *   **Beneficiu:** **Reduce confuzia și întrebările repetitive.** Șoferii și personalul pot vedea rapid statusul fiecărui camion, crescând autonomia și eficiența.
+1.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
 
-*   **Actualizări Automate în Timp Real:**
-    *   **Funcționalitate:** Ecranul se actualizează automat, fără a necesita intervenție manuală, de fiecare dată când o informație este modificată în Panoul de Administrare. Include și o funcție de derulare automată dacă lista este prea lungă.
-    *   **Beneficiu:** **Sursă unică de adevăr.** Asigură că informațiile afișate sunt mereu corecte și la zi, eliminând neclaritățile.
+2.  **Set up Environment Variables:**
+    Create a `.env` file and add your Firebase project configuration keys.
 
-*   **Legendă de Culori și Ceas:**
-    *   **Funcționalitate:** O legendă vizuală ajută la identificarea rapidă a statusului unui camion (ex: verde pentru `Plecat`, portocaliu pentru `Întârziat`), iar ceasul afișează data și ora curentă.
-    *   **Beneficiu:** **Intuitiv și ușor de înțeles.** Informația este transmisă eficient, chiar și de la distanță.
+3.  **Run the Development Server:**
+    ```bash
+    npm run dev
+    ```
 
----
-
-### C. Optimizatorul de Rute (`/optimize`) - Planificare Inteligentă
-
-Un instrument avansat, bazat pe inteligență artificială, care ajută la planificarea celor mai eficiente rute.
-
-*   **Sugestii de Rute Optimizate:**
-    *   **Funcționalitate:** Pe baza locației curente, destinației, punctelor intermediare și a datelor despre trafic, sistemul AI sugerează cea mai bună rută.
-    *   **Beneficiu:** **Reducerea costurilor și a timpului de tranzit.** Ajută la evitarea zonelor aglomerate și la optimizarea consumului de combustibil, oferind estimări de timp mai precise.
-
-## 4. Tehnologii Utilizate
-
-Proiectul este construit pe o fundație tehnologică modernă, robustă și scalabilă:
-*   **Framework:** **Next.js** (React) - pentru o interfață rapidă și modernă.
-*   **Bază de Date:** **Firebase Firestore** - pentru stocare de date în timp real, fără server.
-*   **Inteligență Artificială:** **Genkit (Google AI)** - pentru funcționalitatea de optimizare a rutelor.
-*   **Interfață:** **Tailwind CSS** și **shadcn/ui** - pentru un design profesionist și responsiv.
-
-## 5. Concluzie
-
-Acest sistem nu este doar o aplicație, ci un instrument strategic care aduce **eficiență, claritate și control** în procesul logistic. Prin digitalizarea și centralizarea managementului plecărilor, compania poate reduce costurile operaționale, poate îmbunătăți punctualitatea și poate oferi o experiență superioară atât pentru angajați, cât și pentru parteneri.
+The application will be available at `http://localhost:9002`.
