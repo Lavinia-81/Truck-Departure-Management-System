@@ -108,8 +108,8 @@ export default function DisplayPage() {
   }
 
   const animationDuration = useMemo(() => {
-    // Adjust speed based on number of rows. ~2.5 seconds per row.
-    return sortedDepartures.length * 2.5;
+    // Adjust speed based on number of rows. ~5 seconds per row.
+    return sortedDepartures.length * 5;
   }, [sortedDepartures.length]);
 
 
