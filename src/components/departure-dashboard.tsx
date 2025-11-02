@@ -161,6 +161,7 @@ export default function DepartureDashboard() {
       'Collection Time': format(parseISO(d.collectionTime), 'yyyy-MM-dd HH:mm'),
       'Bay': d.bayDoor,
       'Seal No.': d.sealNumber || 'N/A',
+      'Driver': d.driverName || 'N/A',
       'Schedule No.': d.scheduleNumber,
       'Status': d.status,
     }));
@@ -171,7 +172,7 @@ export default function DepartureDashboard() {
     
     worksheet['!cols'] = [
         { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
-        { wch: 20 }, { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 12 },
+        { wch: 20 }, { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 12 },
     ];
     
     XLSX.writeFile(workbook, `departures_export_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
@@ -216,6 +217,7 @@ export default function DepartureDashboard() {
             collectionTime: collectionTime.toISOString(),
             bayDoor: Number(row['Bay']),
             sealNumber: row['Seal No.'] === 'N/A' ? '' : String(row['Seal No.']),
+            driverName: row['Driver'] === 'N/A' ? '' : String(row['Driver']),
             scheduleNumber: String(row['Schedule No.']),
             status: row['Status'] as Status,
           };
@@ -370,6 +372,7 @@ export default function DepartureDashboard() {
                     <TableHead className="text-primary-foreground">Collection Time</TableHead>
                     <TableHead className="text-primary-foreground">Bay</TableHead>
                     <TableHead className="text-primary-foreground">Seal No.</TableHead>
+                    <TableHead className="text-primary-foreground">Driver</TableHead>
                     <TableHead className="text-primary-foreground">Schedule No.</TableHead>
                     <TableHead className="text-primary-foreground">Status</TableHead>
                     <TableHead className="text-right text-primary-foreground">Actions</TableHead>
@@ -378,7 +381,7 @@ export default function DepartureDashboard() {
                 <TableBody>
                 {isLoadingDepartures && (
                     <TableRow>
-                        <TableCell colSpan={10} className="text-center h-24">Loading departures...</TableCell>
+                        <TableCell colSpan={11} className="text-center h-24">Loading departures...</TableCell>
                     </TableRow>
                 )}
                 {!isLoadingDepartures && sortedDepartures.length > 0 ? (
@@ -400,6 +403,7 @@ export default function DepartureDashboard() {
                         <TableCell>{format(parseISO(d.collectionTime), 'HH:mm')}</TableCell>
                         <TableCell>{d.bayDoor}</TableCell>
                         <TableCell>{d.sealNumber || 'N/A'}</TableCell>
+                        <TableCell>{d.driverName || 'N/A'}</TableCell>
                         <TableCell>{d.scheduleNumber}</TableCell>
                         <TableCell><Badge variant="outline" className="border-current">{d.status}</Badge></TableCell>
                         <TableCell className="text-right">
@@ -417,7 +421,7 @@ export default function DepartureDashboard() {
                     })
                 ) : (
                     !isLoadingDepartures && <TableRow>
-                    <TableCell colSpan={10} className="text-center">
+                    <TableCell colSpan={11} className="text-center">
                         No departures scheduled. Use "Seed" to add initial data or "Add Departure" to create a new one.
                     </TableCell>
                     </TableRow>

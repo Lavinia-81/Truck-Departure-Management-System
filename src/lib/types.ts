@@ -13,6 +13,7 @@ export interface Departure {
   collectionTime: string; // ISO string format for date and time
   bayDoor: number;
   sealNumber?: string;
+  driverName?: string;
   scheduleNumber: string;
   status: Status;
 }

@@ -41,6 +41,10 @@
           "type": "string",
           "description": "The seal number assigned to the truck (if applicable)."
         },
+        "driverName": {
+          "type": "string",
+          "description": "The name of the truck driver."
+        },
         "scheduleNumber": {
           "type": "string",
           "description": "The schedule number associated with the dispatch."

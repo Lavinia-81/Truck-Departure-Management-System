@@ -75,6 +75,7 @@ export default function DisplayPage() {
                     <TableHead className="text-primary-foreground">Via</TableHead>
                     <TableHead className="text-primary-foreground">Destination</TableHead>
                     <TableHead className="text-primary-foreground">Trailer</TableHead>
+                    <TableHead className="text-primary-foreground">Driver</TableHead>
                     <TableHead className="text-primary-foreground">Time</TableHead>
                     <TableHead className="text-primary-foreground">Bay</TableHead>
                     <TableHead className="text-primary-foreground">Status</TableHead>
@@ -83,7 +84,7 @@ export default function DisplayPage() {
                 <TableBody className="text-base md:text-lg">
                   {isLoadingDepartures && (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center h-48 text-2xl">
+                      <TableCell colSpan={8} className="text-center h-48 text-2xl">
                         Loading Departures...
                       </TableCell>
                     </TableRow>
@@ -104,6 +105,7 @@ export default function DisplayPage() {
                           <TableCell>{d.via || '–'}</TableCell>
                           <TableCell className="font-medium">{d.destination}</TableCell>
                           <TableCell>{d.trailerNumber}</TableCell>
+                          <TableCell>{d.driverName || '–'}</TableCell>
                           <TableCell className="font-bold text-xl md:text-2xl">{format(parseISO(d.collectionTime), 'HH:mm')}</TableCell>
                           <TableCell className="font-bold text-xl md:text-2xl">{d.bayDoor}</TableCell>
                           <TableCell>
@@ -117,7 +119,7 @@ export default function DisplayPage() {
                   ) : (
                     !isLoadingDepartures && (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center h-48 text-2xl">
+                        <TableCell colSpan={8} className="text-center h-48 text-2xl">
                           No Departures Scheduled
                         </TableCell>
                       </TableRow>

@@ -18,6 +18,7 @@ const formSchema = z.object({
   collectionTime: z.string().refine((val) => !isNaN(Date.parse(val)), "Invalid date format"),
   bayDoor: z.coerce.number().int().min(1, "Bay door is required."),
   sealNumber: z.string().optional(),
+  driverName: z.string().optional(),
   scheduleNumber: z.string().min(1, "Schedule number is required."),
   status: z.enum(STATUSES),
 });
@@ -36,6 +37,7 @@ export function DepartureForm({ departure, onSave, onCancel }: DepartureFormProp
         ...departure,
         via: departure.via || '',
         sealNumber: departure.sealNumber || '',
+        driverName: departure.driverName || '',
         collectionTime: format(parseISO(departure.collectionTime), "yyyy-MM-dd'T'HH:mm"),
       }
     : {
@@ -48,6 +50,7 @@ export function DepartureForm({ departure, onSave, onCancel }: DepartureFormProp
         scheduleNumber: '',
         via: '',
         sealNumber: '',
+        driverName: '',
       };
   
   const form = useForm<DepartureFormValues>({
@@ -110,7 +113,8 @@ export function DepartureForm({ departure, onSave, onCancel }: DepartureFormProp
           <FormField control={form.control} name="scheduleNumber" render={({ field }) => (<FormItem><FormLabel>Schedule Number</FormLabel><FormControl><Input placeholder="e.g., SCH-001" {...field} /></FormControl><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="collectionTime" render={({ field }) => (<FormItem><FormLabel>Collection Time</FormLabel><FormControl><Input type="datetime-local" {...field} /></FormControl><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="bayDoor" render={({ field }) => (<FormItem><FormLabel>Bay Door</FormLabel><FormControl><Input type="number" placeholder="e.g., 5" {...field} /></FormControl><FormMessage /></FormItem>)} />
-          <FormField control={form.control} name="sealNumber" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Seal Number</FormLabel><FormControl><Input placeholder="e.g., S-RM123 (optional)" {...field} /></FormControl><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="sealNumber" render={({ field }) => (<FormItem><FormLabel>Seal Number</FormLabel><FormControl><Input placeholder="e.g., S-RM123 (optional)" {...field} /></FormControl><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="driverName" render={({ field }) => (<FormItem><FormLabel>Driver Name</FormLabel><FormControl><Input placeholder="e.g., John Doe (optional)" {...field} /></FormControl><FormMessage /></FormItem>)} />
         </div>
         <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
