@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Edit, Truck, Package, Anchor, Building, Trash2, PlusCircle } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, addMinutes } from 'date-fns';
 import type { Departure, Status, Carrier, CARRIERS } from '@/lib/types';
 import { EditDepartureDialog } from './edit-departure-dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -75,11 +75,20 @@ export default function DepartureDashboard() {
     if (!departures || isLoadingDepartures || !firestore) return;
 
     const interval = setInterval(() => {
+      const now = new Date();
       departures.forEach(d => {
-        if (d.status === 'Waiting' && new Date() > new Date(d.collectionTime)) {
-            const departureRef = doc(firestore, 'dispatchSchedules', d.id);
-            // Use non-blocking update for background status change
-            setDocumentNonBlocking(departureRef, { status: 'Delayed' }, { merge: true });
+        // Check if the departure is in a state that can become delayed
+        const canBecomeDelayed = d.status === 'Waiting' || d.status === 'Loading';
+        
+        if (canBecomeDelayed) {
+          const collectionTime = new Date(d.collectionTime);
+          const delayedTime = addMinutes(collectionTime, 10);
+          
+          if (now > delayedTime) {
+              const departureRef = doc(firestore, 'dispatchSchedules', d.id);
+              // Use non-blocking update for background status change
+              setDocumentNonBlocking(departureRef, { status: 'Delayed' }, { merge: true });
+          }
         }
       });
     }, 60000); // Check every minute
@@ -404,10 +413,11 @@ export default function DepartureDashboard() {
         </Card>
       </main>
       <footer className="sticky bottom-0 border-t bg-background px-4 py-2 md:px-6 flex-shrink-0">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm md:text-base">
+            <span className="font-semibold text-lg mr-4">Legend:</span>
             {STATUSES.map((status) => (
               <div key={status} className="flex items-center gap-2">
-                <div className={cn("h-3 w-3 rounded-full", statusColors[status])}></div>
+                <div className={cn("h-4 w-4 rounded-full", statusColors[status])}></div>
                 <span>{status}</span>
               </div>
             ))}
