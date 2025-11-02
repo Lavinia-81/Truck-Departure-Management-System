@@ -13,7 +13,8 @@ The application is built around three key components:
 ### A. Admin Dashboard (`/`)
 The central command center for logistics personnel.
 
-*   **Centralized Schedule Management (CRUD):** Add, edit, and delete departures through an intuitive interface. All changes are reflected in real-time.
+*   **Centralized Schedule Management:** Add, edit, and delete departures through an intuitive interface. All changes are reflected in real-time.
+*   **Intelligent Status Automation:** The system automatically updates a departure's status to `Delayed` if it has not departed within 10 minutes of its scheduled collection time, ensuring data accuracy.
 *   **Bulk Data Import/Export:** Quickly populate schedules by importing data from an **Excel** file and export the current view for reporting and analysis.
 *   **Real-Time Status Updates:** Instantly change a departure's status (e.g., from `Waiting` to `Loading`), ensuring all teams have up-to-the-minute information.
 
@@ -48,7 +49,7 @@ To run the project locally, follow these steps:
     ```
 
 2.  **Set up Environment Variables:**
-    Create a `.env` file and add your Firebase project configuration keys.
+    Create a `.env.local` file and add your Firebase project configuration keys (e.g., `GEMINI_API_KEY`).
 
 3.  **Run the Development Server:**
     ```bash
