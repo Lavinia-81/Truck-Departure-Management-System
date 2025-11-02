@@ -27,7 +27,7 @@ import {
 import Header from './header';
 import { DashboardActions } from './dashboard-actions';
 import { useCollection, useFirestore, useMemoFirebase, addDocumentNonBlocking, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
-import { collection, doc, writeBatch } from 'firebase/firestore';
+import { collection, doc, writeBatch, getDocs } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 
 const statusColors: Record<Status, string> = {
@@ -61,6 +61,7 @@ export default function DepartureDashboard() {
   const [editingDeparture, setEditingDeparture] = useState<Departure | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deletingDeparture, setDeletingDeparture] = useState<Departure | null>(null);
+  const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -283,6 +284,38 @@ export default function DepartureDashboard() {
     }
   };
 
+  const handleClearAll = async () => {
+    try {
+        const querySnapshot = await getDocs(departuresCol);
+        if (querySnapshot.empty) {
+            toast({
+                title: "Already Empty",
+                description: "There is no data to clear."
+            });
+            setIsClearDialogOpen(false);
+            return;
+        }
+
+        const batch = writeBatch(firestore);
+        querySnapshot.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
+        toast({
+            title: "Clearance Complete",
+            description: "All departure data has been deleted."
+        });
+    } catch (error) {
+        console.error("Error clearing database:", error);
+        toast({
+            variant: "destructive",
+            title: "Clearance Failed",
+            description: "Could not clear all data from Firestore.",
+        });
+    }
+    setIsClearDialogOpen(false);
+  };
+
   if (isLoadingDepartures) {
      return (
       <div className="flex min-h-screen flex-col items-center justify-center">
@@ -301,6 +334,10 @@ export default function DepartureDashboard() {
       <Button size="sm" variant="outline" onClick={seedDatabase}>
           <Database className="mr-2 h-4 w-4" />
           Seed
+      </Button>
+      <Button size="sm" variant="destructive" onClick={() => setIsClearDialogOpen(true)}>
+          <Trash2 className="mr-2 h-4 w-4" />
+          Clear All
       </Button>
     </div>
   );
@@ -407,6 +444,20 @@ export default function DepartureDashboard() {
               <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+              </AlertDialogFooter>
+          </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={isClearDialogOpen} onOpenChange={setIsClearDialogOpen}>
+          <AlertDialogContent>
+              <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete all departure data from the database.
+                  </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleClearAll} className="bg-destructive hover:bg-destructive/90">Yes, delete everything</AlertDialogAction>
               </AlertDialogFooter>
           </AlertDialogContent>
       </AlertDialog>
