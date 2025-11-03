@@ -54,10 +54,6 @@ const carrierStyles: Record<string, CarrierStyle> = {
     },
     'McBurney': { className: 'bg-purple-500 hover:bg-purple-600 text-white border-purple-600', icon: Anchor },
     'Montgomery': { className: 'bg-orange-500 hover:bg-orange-600 text-white border-orange-600', icon: Building },
-    'The Very Group': {
-        className: 'bg-black hover:bg-gray-800 text-white border-gray-700',
-        iconUrl: 'https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png'
-    },
 };
 
 
@@ -354,11 +350,15 @@ export default function DepartureDashboard() {
       <Header 
         onImport={handleImportClick}
         onExport={handleExport}
+        onAddNew={handleAddNew}
       />
       <main className="flex-1 flex flex-col space-y-4 p-4 md:p-8 pt-6 overflow-hidden">
         <Card className="flex-1 flex flex-col overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between gap-2">
-            <CardTitle>Departures</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <CardTitle>Departures</CardTitle>
+              <Image src="https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png" alt="The Very Group Logo" width={80} height={31} className="h-auto" />
+            </div>
             <Button size="sm" onClick={handleAddNew}>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add Departure

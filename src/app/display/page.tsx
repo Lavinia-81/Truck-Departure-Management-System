@@ -38,10 +38,6 @@ const carrierStyles: Record<string, CarrierStyle> = {
   },
   'McBurney': { className: 'bg-purple-500 hover:bg-purple-600 text-white border-purple-600', icon: Anchor },
   'Montgomery': { className: 'bg-orange-500 hover:bg-orange-600 text-white border-orange-600', icon: Building },
-  'The Very Group': {
-    className: 'bg-black hover:bg-gray-800 text-white border-gray-700',
-    iconUrl: 'https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png'
-  },
 };
 
 
