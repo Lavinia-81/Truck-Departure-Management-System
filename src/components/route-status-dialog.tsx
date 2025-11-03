@@ -53,7 +53,7 @@ export function RouteStatusDialog({ isOpen, onOpenChange, departure, routeStatus
         <DialogHeader>
           <DialogTitle>Route Status for Trailer {departure?.trailerNumber}</DialogTitle>
           <DialogDescription>
-            Live traffic warnings for the route from <span className="font-semibold">Depot, Liverpool</span> to <span className="font-semibold">{departure?.destination}</span>.
+            Live traffic warnings for the route from <span className="font-semibold">Sky Gate</span> to <span className="font-semibold">{departure?.destination}</span>.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-6">
