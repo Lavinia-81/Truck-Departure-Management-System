@@ -347,7 +347,7 @@ export default function DepartureDashboard() {
 
   return (
     <div className="flex flex-col h-screen">
-       <Header 
+      <Header 
         onAddNew={handleAddNew}
         onImport={handleImportClick}
         onExport={handleExport}
@@ -434,16 +434,16 @@ export default function DepartureDashboard() {
           </CardContent>
         </Card>
       </main>
-      <footer className="sticky bottom-0 border-t bg-background px-4 py-2 md:px-6 flex-shrink-0">
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm md:text-base">
-            <span className="font-semibold text-lg mr-4">Legend:</span>
+      <footer className="sticky bottom-0 border-t bg-background px-4 py-3 md:px-6 flex-shrink-0">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+            <span className="font-semibold text-base mr-2">Legend:</span>
             {STATUSES.map((status) => (
               <div key={status} className="flex items-center gap-2">
-                <div className={cn("h-4 w-4 rounded-full", statusColors[status])}></div>
+                <div className={cn("h-3 w-3 rounded-full", statusColors[status])}></div>
                 <span>{status}</span>
               </div>
             ))}
-             <div className="flex items-center gap-2 ml-4">
+             <div className="flex items-center gap-2 ml-2">
                 <CheckCircle2 className="h-4 w-4 text-green-500"/><span>Route Clear</span>
             </div>
             <div className="flex items-center gap-2">
@@ -452,7 +452,7 @@ export default function DepartureDashboard() {
             <div className="flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-destructive"/><span>Severe Delay</span>
             </div>
-            <div className="ml-auto">
+            <div className="ml-auto mt-2 md:mt-0">
               <Button size="sm" variant="destructive" onClick={() => setIsClearDialogOpen(true)}>
                 <Trash2 className="mr-2 h-4 w-4" />
                 Clear All
