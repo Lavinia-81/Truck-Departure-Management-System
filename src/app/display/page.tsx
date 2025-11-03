@@ -29,7 +29,7 @@ interface CarrierStyle {
   iconUrl?: string;
 }
 
-const carrierStyles: Record<Carrier, CarrierStyle> = {
+const carrierStyles: Record<string, CarrierStyle> = {
   'Royal Mail': { className: 'bg-red-500 hover:bg-red-600 text-white border-red-600', icon: Package },
   'EVRI': { className: 'bg-sky-500 hover:bg-sky-600 text-white border-sky-600', icon: Truck },
   'Yodel': {
@@ -38,6 +38,10 @@ const carrierStyles: Record<Carrier, CarrierStyle> = {
   },
   'McBurney': { className: 'bg-purple-500 hover:bg-purple-600 text-white border-purple-600', icon: Anchor },
   'Montgomery': { className: 'bg-orange-500 hover:bg-orange-600 text-white border-orange-600', icon: Building },
+  'The Very Group': {
+    className: 'bg-black hover:bg-gray-800 text-white border-gray-700',
+    iconUrl: 'https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png'
+  },
 };
 
 
@@ -88,13 +92,13 @@ export default function DisplayPage() {
   const renderTableRows = (departuresToRender: Departure[]) => {
     return departuresToRender.map(d => {
         const carrierStyle = carrierStyles[d.carrier];
-        const IconComponent = carrierStyle.icon;
+        const IconComponent = carrierStyle?.icon;
         return (
           <TableRow key={d.id} className={cn('transition-colors h-16 md:h-20', statusColors[d.status])}>
             <TableCell>
-              <Badge className={cn('flex items-center gap-2 text-base md:text-lg p-2', carrierStyle.className)}>
+              <Badge className={cn('flex items-center gap-2 text-base md:text-lg p-2', carrierStyle?.className)}>
                 {IconComponent && <IconComponent className="h-5 w-5 md:h-6 md:w-6" />}
-                {carrierStyle.iconUrl && <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={24} height={24} className="rounded-sm" />}
+                {carrierStyle?.iconUrl && <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={24} height={24} className="rounded-sm" />}
                 <span>{d.carrier}</span>
               </Badge>
             </TableCell>
@@ -116,14 +120,14 @@ export default function DisplayPage() {
   const renderMobileCards = (departuresToRender: Departure[]) => {
     return departuresToRender.map(d => {
       const carrierStyle = carrierStyles[d.carrier];
-      const IconComponent = carrierStyle.icon;
+      const IconComponent = carrierStyle?.icon;
       return (
         <Card key={d.id} className={cn("mb-4 border-l-4", statusColors[d.status], `border-${statusColors[d.status].split(' ')[0]}`)}>
           <CardContent className="p-4 space-y-3">
             <div className="flex justify-between items-center">
-              <Badge className={cn('flex items-center gap-2 text-base p-2', carrierStyle.className)}>
+              <Badge className={cn('flex items-center gap-2 text-base p-2', carrierStyle?.className)}>
                   {IconComponent && <IconComponent className="h-5 w-5" />}
-                  {carrierStyle.iconUrl && <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={20} height={20} className="rounded-sm" />}
+                  {carrierStyle?.iconUrl && <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={20} height={20} className="rounded-sm" />}
                   <span>{d.carrier}</span>
               </Badge>
               <Badge variant="outline" className="border-current text-base p-2">{d.status}</Badge>
@@ -241,5 +245,3 @@ export default function DisplayPage() {
     </div>
   );
 }
-
-    

@@ -45,7 +45,7 @@ interface CarrierStyle {
     iconUrl?: string;
 }
 
-const carrierStyles: Record<Carrier, CarrierStyle> = {
+const carrierStyles: Record<string, CarrierStyle> = {
     'Royal Mail': { className: 'bg-red-500 hover:bg-red-600 text-white border-red-600', icon: Package },
     'EVRI': { className: 'bg-sky-500 hover:bg-sky-600 text-white border-sky-600', icon: Truck },
     'Yodel': { 
@@ -54,6 +54,10 @@ const carrierStyles: Record<Carrier, CarrierStyle> = {
     },
     'McBurney': { className: 'bg-purple-500 hover:bg-purple-600 text-white border-purple-600', icon: Anchor },
     'Montgomery': { className: 'bg-orange-500 hover:bg-orange-600 text-white border-orange-600', icon: Building },
+    'The Very Group': {
+        className: 'bg-black hover:bg-gray-800 text-white border-gray-700',
+        iconUrl: 'https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png'
+    },
 };
 
 
@@ -259,7 +263,7 @@ export default function DepartureDashboard() {
             scheduleNumber: String(row['Schedule No.']),
             status: row['Status'] as Status,
           };
-        }).filter((d): d is Omit<Departure, 'id'> => d !== null && d.carrier && d.destination && d.collectionTime && CARRIERS.includes(d.carrier));
+        }).filter((d): d is Omit<Departure, 'id'> => d !== null && d.carrier && d.destination && d.collectionTime && (CARRIERS as readonly string[]).includes(d.carrier));
 
         if (newDepartures.length > 0) {
             const batch = writeBatch(firestore);
@@ -357,7 +361,7 @@ export default function DepartureDashboard() {
           <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle>Departures</CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col overflow-hidden">
+          <CardContent className="flex-1 flex flex-col overflow-auto">
             <input type="file" ref={fileInputRef} onChange={handleFileImport} accept=".xlsx, .xls" className="hidden" />
             <div className="relative w-full overflow-x-auto">
               <Table>
@@ -385,13 +389,13 @@ export default function DepartureDashboard() {
                   {!isLoadingDepartures && sortedDepartures.length > 0 ? (
                     sortedDepartures.map(d => {
                       const carrierStyle = carrierStyles[d.carrier];
-                      const IconComponent = carrierStyle.icon;
+                      const IconComponent = carrierStyle?.icon;
                       return (
                         <TableRow key={d.id} className={cn('transition-colors', statusColors[d.status])}>
                           <TableCell>
-                            <Badge className={cn('flex items-center gap-2', carrierStyle.className)}>
+                            <Badge className={cn('flex items-center gap-2', carrierStyle?.className)}>
                               {IconComponent && <IconComponent className="h-4 w-4" />}
-                              {carrierStyle.iconUrl && <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={16} height={16} className="rounded-sm" />}
+                              {carrierStyle?.iconUrl && <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={16} height={16} className="rounded-sm" />}
                               <span>{d.carrier}</span>
                             </Badge>
                           </TableCell>

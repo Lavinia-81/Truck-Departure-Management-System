@@ -41,7 +41,7 @@ export function DepartureForm({ departure, onSave, onCancel }: DepartureFormProp
         collectionTime: format(parseISO(departure.collectionTime), "yyyy-MM-dd'T'HH:mm"),
       }
     : {
-        carrier: CARRIERS[0],
+        carrier: 'The Very Group',
         status: 'Waiting',
         collectionTime: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
         destination: '',
