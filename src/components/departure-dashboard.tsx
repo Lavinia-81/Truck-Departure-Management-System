@@ -357,8 +357,8 @@ export default function DepartureDashboard() {
           <CardHeader className="flex flex-row items-center justify-between gap-2 md:gap-4">
             <CardTitle>Departures</CardTitle>
             <div className="bg-white p-1.5 rounded-md shadow-sm">
-                <div className="w-[70px] md:w-[120px] h-auto">
-                    <Image src="https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png" alt="The Very Group Logo" width={150} height={58} className="h-auto w-full" />
+                <div className="w-[70px] h-auto md:w-[120px]">
+                    <Image src="https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png" alt="The Very Group Logo" width={120} height={47} className="h-auto w-full" />
                 </div>
             </div>
             <Button size="sm" onClick={handleAddNew} className="ml-auto">
@@ -453,15 +453,6 @@ export default function DepartureDashboard() {
                 <span>{status}</span>
               </div>
             ))}
-             <div className="flex items-center gap-2 ml-2">
-                <CheckCircle2 className="h-4 w-4 text-green-500"/><span>Route Clear</span>
-            </div>
-            <div className="flex items-center gap-2">
-                <TrafficCone className="h-4 w-4 text-orange-400"/><span>Moderate Delay</span>
-            </div>
-            <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-destructive"/><span>Severe Delay</span>
-            </div>
             <div className="ml-auto mt-2 md:mt-0">
               <Button size="sm" variant="destructive" onClick={() => setIsClearDialogOpen(true)}>
                 <Trash2 className="mr-2 h-4 w-4" />
