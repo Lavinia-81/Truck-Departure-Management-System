@@ -27,6 +27,7 @@ const SuggestOptimizedRouteOutputSchema = z.object({
   reasoning: z
     .string()
     .describe('The reasoning behind the suggested route optimization.'),
+    roadWarnings: z.string().optional().describe('A summary of any warnings, accidents, or significant traffic issues on the suggested route. If there are no issues, this should state "No significant warnings."'),
 });
 export type SuggestOptimizedRouteOutput = z.infer<
   typeof SuggestOptimizedRouteOutputSchema
@@ -42,14 +43,20 @@ const prompt = ai.definePrompt({
   name: 'suggestOptimizedRoutePrompt',
   input: {schema: SuggestOptimizedRouteInputSchema},
   output: {schema: SuggestOptimizedRouteOutputSchema},
-  prompt: `You are an AI-powered route optimization expert. Given the destination, via points (if any), current location, and real-time traffic data (if any), you will suggest an optimized route and provide an estimated time of arrival.  Explain your reasoning for the suggested route.
+  prompt: `You are an AI-powered route optimization expert. Your task is to analyze the provided route details and traffic information to suggest the most efficient path.
+
+Your primary focus is to identify and report any significant road warnings. This includes accidents, road closures, heavy congestion, or any other event that could cause major delays.
 
 Destination: {{{destination}}}
 Via (First Stop): {{{via}}}
 Current Location: {{{currentLocation}}}
 Traffic Data: {{{trafficData}}}
 
-Optimize the route to reduce delays and improve efficiency.
+Based on this, provide:
+1.  An optimized route.
+2.  An estimated time of arrival.
+3.  A summary of your reasoning.
+4.  A clear and concise summary of all major road warnings. If there are no issues, explicitly state "No significant warnings."
 `,
 });
 

@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Edit, Truck, Package, Anchor, Building, Trash2, PlusCircle } from 'lucide-react';
+import { Edit, Truck, Package, Anchor, Building, Trash2, PlusCircle, TrafficCone } from 'lucide-react';
 import { format, parseISO, addMinutes } from 'date-fns';
 import type { Departure, Status, Carrier, CARRIERS } from '@/lib/types';
 import { EditDepartureDialog } from './edit-departure-dialog';
@@ -29,6 +29,8 @@ import { useCollection, useFirestore, useMemoFirebase, addDocumentNonBlocking, s
 import { collection, doc, writeBatch, getDocs } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { STATUSES } from '@/lib/types';
+import { RouteStatusDialog } from './route-status-dialog';
+import { suggestOptimizedRoute, SuggestOptimizedRouteOutput } from '@/ai/flows/suggest-optimized-route';
 
 const statusColors: Record<Status, string> = {
   Departed: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800',
@@ -62,6 +64,11 @@ export default function DepartureDashboard() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deletingDeparture, setDeletingDeparture] = useState<Departure | null>(null);
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
+  const [isRouteStatusDialogOpen, setIsRouteStatusDialogOpen] = useState(false);
+  const [selectedDepartureForStatus, setSelectedDepartureForStatus] = useState<Departure | null>(null);
+  const [routeStatus, setRouteStatus] = useState<SuggestOptimizedRouteOutput | null>(null);
+  const [isRouteStatusLoading, setIsRouteStatusLoading] = useState(false);
+
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -109,6 +116,32 @@ export default function DepartureDashboard() {
   const handleDelete = (departure: Departure) => {
     setDeletingDeparture(departure);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleShowRouteStatus = async (departure: Departure) => {
+    setSelectedDepartureForStatus(departure);
+    setIsRouteStatusDialogOpen(true);
+    setIsRouteStatusLoading(true);
+    setRouteStatus(null);
+    try {
+      const result = await suggestOptimizedRoute({
+        currentLocation: "Depot, Liverpool",
+        destination: departure.destination,
+        via: departure.via,
+        trafficData: "Assume current conditions",
+      });
+      setRouteStatus(result);
+    } catch (e) {
+      console.error(e);
+      toast({
+        variant: "destructive",
+        title: "Error fetching route status",
+        description: "Could not retrieve traffic warnings. Please try again."
+      })
+      // Keep dialog open but show error, so we need to handle this in the dialog component
+    } finally {
+      setIsRouteStatusLoading(false);
+    }
   };
 
   const confirmDelete = () => {
@@ -387,6 +420,10 @@ export default function DepartureDashboard() {
                           <TableCell>{d.scheduleNumber}</TableCell>
                           <TableCell><Badge variant="outline" className="border-current">{d.status}</Badge></TableCell>
                           <TableCell className="text-right">
+                            <Button variant="ghost" size="icon" onClick={() => handleShowRouteStatus(d)}>
+                               <TrafficCone className="h-4 w-4 text-orange-400" />
+                               <span className="sr-only">Route Status</span>
+                            </Button>
                             <Button variant="ghost" size="icon" onClick={() => handleEdit(d)}>
                               <Edit className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
@@ -434,6 +471,13 @@ export default function DepartureDashboard() {
         onOpenChange={setIsDialogOpen}
         departure={editingDeparture}
         onSave={handleSave}
+      />
+      <RouteStatusDialog
+        isOpen={isRouteStatusDialogOpen}
+        onOpenChange={setIsRouteStatusDialogOpen}
+        departure={selectedDepartureForStatus}
+        routeStatus={routeStatus}
+        isLoading={isRouteStatusLoading}
       />
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
