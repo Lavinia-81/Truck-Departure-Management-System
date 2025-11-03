@@ -6,9 +6,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Edit, Truck, Package, Anchor, Building, Trash2, TrafficCone, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Edit, Truck, Package, Anchor, Building, Trash2, TrafficCone, AlertTriangle, CheckCircle2, PlusCircle } from 'lucide-react';
 import { format, parseISO, addMinutes } from 'date-fns';
-import type { Departure, Status, Carrier, CARRIERS } from '@/lib/types';
+import type { Departure, Status, Carrier } from '@/lib/types';
 import { EditDepartureDialog } from './edit-departure-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -27,7 +27,7 @@ import Header from './header';
 import { useCollection, useFirestore, useMemoFirebase, addDocumentNonBlocking, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import { collection, doc, writeBatch, getDocs } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
-import { STATUSES } from '@/lib/types';
+import { STATUSES, CARRIERS } from '@/lib/types';
 import { RouteStatusDialog } from './route-status-dialog';
 import { suggestOptimizedRoute, SuggestOptimizedRouteOutput } from '@/ai/flows/suggest-optimized-route';
 
@@ -352,7 +352,6 @@ export default function DepartureDashboard() {
   return (
     <div className="flex flex-col h-screen">
       <Header 
-        onAddNew={handleAddNew}
         onImport={handleImportClick}
         onExport={handleExport}
       />
@@ -360,6 +359,10 @@ export default function DepartureDashboard() {
         <Card className="flex-1 flex flex-col overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle>Departures</CardTitle>
+            <Button size="sm" onClick={handleAddNew}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Departure
+            </Button>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col overflow-auto">
             <input type="file" ref={fileInputRef} onChange={handleFileImport} accept=".xlsx, .xls" className="hidden" />
