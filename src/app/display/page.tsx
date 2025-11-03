@@ -153,7 +153,8 @@ export default function DisplayPage() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-lg md:text-xl">
-      <header className="flex flex-col items-center gap-2 border-b bg-background px-4 py-4 md:px-6 flex-shrink-0">
+      <header className="flex flex-col items-center gap-4 border-b bg-background px-4 py-4 md:px-6 flex-shrink-0">
+        <Image src="https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png" alt="The Very Group Logo" width={120} height={46} className="h-auto" />
         <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
           Truck Departure Board
         </h1>
