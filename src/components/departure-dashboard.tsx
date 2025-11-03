@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Edit, Truck, Package, Anchor, Building, Trash2, PlusCircle, TrafficCone, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Edit, Truck, Package, Anchor, Building, Trash2, TrafficCone, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { format, parseISO, addMinutes } from 'date-fns';
 import type { Departure, Status, Carrier, CARRIERS } from '@/lib/types';
 import { EditDepartureDialog } from './edit-departure-dialog';
@@ -24,7 +24,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import Header from './header';
-import { DashboardActions } from './dashboard-actions';
 import { useCollection, useFirestore, useMemoFirebase, addDocumentNonBlocking, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import { collection, doc, writeBatch, getDocs } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
@@ -90,7 +89,7 @@ export default function DepartureDashboard() {
           const collectionTime = new Date(d.collectionTime);
           const delayedTime = addMinutes(collectionTime, 10);
           
-          if (now > delayedTime) {
+          if (now > delayedTime && d.status !== 'Delayed') {
               const departureRef = doc(firestore, 'dispatchSchedules', d.id);
               setDocumentNonBlocking(departureRef, { status: 'Delayed' }, { merge: true });
           }
@@ -345,30 +344,18 @@ export default function DepartureDashboard() {
       </div>
     )
   }
-  
-  const headerActions = (
-    <div className="flex items-center gap-2">
-      <DashboardActions 
-          onExport={handleExport}
-          onImportClick={handleImportClick}
-      />
-    </div>
-  );
-
 
   return (
     <div className="flex flex-col h-screen">
-      <Header actions={headerActions} />
+       <Header 
+        onAddNew={handleAddNew}
+        onImport={handleImportClick}
+        onExport={handleExport}
+      />
       <main className="flex-1 flex flex-col space-y-4 p-4 md:p-8 pt-6 overflow-y-auto">
         <Card className="flex-1 flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle>Departures</CardTitle>
-            <div className="flex items-center gap-2">
-              <Button size="sm" onClick={handleAddNew}>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add Departure
-              </Button>
-            </div>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col">
             <input type="file" ref={fileInputRef} onChange={handleFileImport} accept=".xlsx, .xls" className="hidden" />
