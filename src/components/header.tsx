@@ -69,21 +69,21 @@ export default function Header({ onImport, onExport, onAddNew }: HeaderProps) {
       </div>
 
       <div className="hidden items-center gap-4 ml-auto md:flex">
-        <Button size="sm" variant="3d" onClick={onImport}>
+        <Button size="sm" variant="outline" onClick={onImport}>
             <FileUp className="mr-2 h-4 w-4" />
             Import
         </Button>
-        <Button size="sm" variant="3d" onClick={onExport}>
+        <Button size="sm" variant="outline" onClick={onExport}>
             <FileDown className="mr-2 h-4 w-4" />
             Export
         </Button>
-        <Button variant="3d" size="sm" asChild>
+        <Button variant="outline" size="sm" asChild>
           <Link href="/display" target="_blank">
             <Monitor className="mr-2 h-4 w-4" />
             Public Display
           </Link>
         </Button>
-        <Button variant="3d" size="sm" asChild>
+        <Button variant="outline" size="sm" asChild>
           <Link href="/optimize">
             <Route className="mr-2 h-4 w-4" />
             Route Optimizer
