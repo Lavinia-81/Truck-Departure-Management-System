@@ -17,6 +17,7 @@ The central command center for logistics personnel.
 *   **Intelligent Status Automation:** The system automatically updates a departure's status to `Delayed` if it has not departed within 10 minutes of its scheduled collection time, ensuring data accuracy.
 *   **Bulk Data Import/Export:** Quickly populate schedules by importing data from an **Excel** file and export the current view for reporting and analysis.
 *   **Real-Time Status Updates:** Instantly change a departure's status (e.g., from `Waiting` to `Loading`), ensuring all teams have up-to-the-minute information.
+*   **Live Route Hazard Checks:** Before a truck departs, operators can click a button to get an instant, AI-powered analysis of the planned route, identifying accidents, road closures, or heavy congestion.
 
 ### B. Public Display Board (`/display`)
 A "Kiosk" mode screen designed for large monitors in driver waiting areas or the warehouse.
@@ -28,7 +29,7 @@ A "Kiosk" mode screen designed for large monitors in driver waiting areas or the
 ### C. Route Optimizer (`/optimize`)
 An advanced, AI-powered tool to assist in planning the most efficient routes.
 
-*   **Intelligent Route Suggestions:** Based on the current location, destination, and intermediate stops, the AI system suggests the optimal route, considering factors like traffic to reduce transit time and costs.
+*   **Intelligent Route Suggestions:** Based on the current location ("Sky Gate Derby DE74 2BB"), destination, and intermediate stops, the AI system suggests the optimal route, considering factors like traffic to reduce transit time and costs.
 
 ## 3. Technology Stack
 
@@ -49,7 +50,10 @@ To run the project locally, follow these steps:
     ```
 
 2.  **Set up Environment Variables:**
-    Create a `.env.local` file and add your Firebase project configuration keys (e.g., `GEMINI_API_KEY`).
+    Create a `.env.local` file and add your Google AI API key:
+    ```
+    GEMINI_API_KEY=YOUR_API_KEY_HERE
+    ```
 
 3.  **Run the Development Server:**
     ```bash
