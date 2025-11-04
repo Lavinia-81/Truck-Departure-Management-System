@@ -154,14 +154,15 @@ export default function DisplayPage() {
             <Image src="https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png" alt="The Very Group Logo" width={150} height={58} className="h-auto w-full" />
           </div>
         </div>
-        <div className="flex flex-col items-end">
-            <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
+        <div className="flex flex-col items-center">
+            <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-center">
               Truck Departure Board
             </h1>
             <div className="text-xl md:text-2xl">
               <Clock />
             </div>
         </div>
+        <div className="w-[120px]" /> 
       </header>
       <main className="flex-1 flex flex-col space-y-4 p-2 md:p-8 pt-6 overflow-hidden">
         {/* Desktop View (Table) */}
