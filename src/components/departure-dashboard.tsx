@@ -132,14 +132,17 @@ export default function DepartureDashboard() {
         trafficData: "Assume current conditions",
       });
       setRouteStatus(result);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      let description = "Could not retrieve traffic warnings. Please try again.";
+      if (e.message && e.message.includes('429')) {
+        description = "You have reached the API request limit. Please wait a minute before trying again.";
+      }
       toast({
         variant: "destructive",
-        title: "Error fetching route status",
-        description: "Could not retrieve traffic warnings. Please try again."
+        title: "Error Fetching Route Status",
+        description: description,
       })
-      // The dialog component will show an error state if routeStatus is null
     } finally {
       setIsRouteStatusLoading(false);
     }

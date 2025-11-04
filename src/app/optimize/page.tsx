@@ -44,9 +44,13 @@ export default function RouteOptimizerPage() {
     try {
       const response = await suggestOptimizedRoute(data);
       setResult(response);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      setError("Failed to get route optimization. Please try again.");
+      if (e.message && e.message.includes('429')) {
+        setError("Too many requests. Please wait a minute and try again.");
+      } else {
+        setError("Failed to get route optimization. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
