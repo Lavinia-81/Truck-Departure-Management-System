@@ -30,6 +30,7 @@ import { Loader2 } from 'lucide-react';
 import { STATUSES, CARRIERS } from '@/lib/types';
 import { RouteStatusDialog } from './route-status-dialog';
 import { suggestOptimizedRoute, SuggestOptimizedRouteOutput } from '@/ai/flows/suggest-optimized-route';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 const statusColors: Record<Status, string> = {
   Departed: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800',
@@ -416,18 +417,39 @@ export default function DepartureDashboard() {
                           <TableCell>{d.scheduleNumber}</TableCell>
                           <TableCell><Badge variant="outline" className="border-current">{d.status}</Badge></TableCell>
                           <TableCell className="text-right">
-                            <Button variant="ghost" size="icon" onClick={() => handleShowRouteStatus(d)} title="Check Route Status">
-                               <TrafficCone className="h-4 w-4 text-orange-400" />
-                               <span className="sr-only">Route Status</span>
-                            </Button>
-                            <Button variant="ghost" size="icon" onClick={() => handleEdit(d)}>
-                              <Edit className="h-4 w-4" />
-                              <span className="sr-only">Edit</span>
-                            </Button>
-                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDelete(d)}>
-                              <Trash2 className="h-4 w-4" />
-                              <span className="sr-only">Delete</span>
-                            </Button>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" onClick={() => handleShowRouteStatus(d)}>
+                                  <TrafficCone className="h-4 w-4 text-orange-400" />
+                                  <span className="sr-only">Route Status</span>
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Check Route Status</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" onClick={() => handleEdit(d)}>
+                                  <Edit className="h-4 w-4" />
+                                  <span className="sr-only">Edit</span>
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Edit Departure</p>
+                              </TooltipContent>
+                            </Tooltip>
+                             <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDelete(d)}>
+                                  <Trash2 className="h-4 w-4" />
+                                  <span className="sr-only">Delete</span>
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Delete Departure</p>
+                              </TooltipContent>
+                            </Tooltip>
                           </TableCell>
                         </TableRow>
                       );
@@ -507,3 +529,5 @@ export default function DepartureDashboard() {
     </div>
   );
 }
+
+    
