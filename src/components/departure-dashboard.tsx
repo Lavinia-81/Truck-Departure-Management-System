@@ -29,8 +29,7 @@ import { collection, doc, writeBatch, getDocs, query, orderBy } from 'firebase/f
 import { Loader2 } from 'lucide-react';
 import { STATUSES, CARRIERS } from '@/lib/types';
 import { RouteStatusDialog } from './route-status-dialog';
-import { suggestOptimizedRoute, SuggestOptimizedRouteOutput } from '@/ai/flows/suggest-optimized-route';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 const statusColors: Record<Status, string> = {
   Departed: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800',
@@ -137,7 +136,7 @@ export default function DepartureDashboard() {
       console.error(e);
       let description = "Could not retrieve traffic warnings. Please try again.";
       if (e.message && e.message.includes('429')) {
-        description = "You have reached the API request limit. Please wait a minute before trying again.";
+        description = "Ați atins limita de cereri API. Vă rugăm să așteptați un minut înainte de a încerca din nou.";
       }
       toast({
         variant: "destructive",
@@ -348,185 +347,187 @@ export default function DepartureDashboard() {
   }
 
   return (
-    <div className="flex flex-col h-screen">
-      <Header 
-        onImport={handleImportClick}
-        onExport={handleExport}
-        onAddNew={handleAddNew}
-      />
-      <main className="flex-1 flex flex-col space-y-4 p-4 md:p-8 pt-6 overflow-hidden">
-        <Card className="flex-1 flex flex-col overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 md:gap-4">
-            <CardTitle>Departures</CardTitle>
-            <div className="bg-white p-1.5 rounded-md shadow-sm">
-                <div className="w-[60px] h-auto md:w-[100px]">
-                    <Image src="https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png" alt="The Very Group Logo" width={120} height={47} className="h-auto w-full" />
-                </div>
-            </div>
-            <Button size="sm" onClick={handleAddNew} className="ml-auto">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                <span className="hidden md:inline">Add Departure</span>
-                <span className="md:hidden">Add</span>
-            </Button>
-          </CardHeader>
-          <CardContent className="flex-1 flex flex-col overflow-hidden">
-            <input type="file" ref={fileInputRef} onChange={handleFileImport} accept=".xlsx, .xls" className="hidden" />
-            <div className="relative w-full overflow-auto">
-              <Table>
-                <TableHeader className="bg-primary/90">
-                  <TableRow className="border-primary/90 hover:bg-primary/90">
-                    <TableHead className="text-primary-foreground">Carrier</TableHead>
-                    <TableHead className="text-primary-foreground">Via</TableHead>
-                    <TableHead className="text-primary-foreground">Destination</TableHead>
-                    <TableHead className="text-primary-foreground">Trailer</TableHead>
-                    <TableHead className="text-primary-foreground">Collection Time</TableHead>
-                    <TableHead className="text-primary-foreground">Bay</TableHead>
-                    <TableHead className="text-primary-foreground">Seal No.</TableHead>
-                    <TableHead className="text-primary-foreground">Driver</TableHead>
-                    <TableHead className="text-primary-foreground">Schedule No.</TableHead>
-                    <TableHead className="text-primary-foreground">Status</TableHead>
-                    <TableHead className="text-right text-primary-foreground">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {isLoadingDepartures && (
-                    <TableRow>
-                      <TableCell colSpan={11} className="text-center h-24">Loading departures...</TableCell>
-                    </TableRow>
-                  )}
-                  {!isLoadingDepartures && departures && departures.length > 0 ? (
-                    departures.map(d => {
-                      const carrierStyle = carrierStyles[d.carrier];
-                      const IconComponent = carrierStyle?.icon;
-                      return (
-                        <TableRow key={d.id} className={cn('transition-colors', statusColors[d.status])}>
-                          <TableCell>
-                            <Badge className={cn('flex items-center gap-2', carrierStyle?.className)}>
-                              {IconComponent && <IconComponent className="h-4 w-4" />}
-                              {carrierStyle?.iconUrl && <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={16} height={16} className="rounded-sm" />}
-                              <span>{d.carrier}</span>
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{d.via || 'N/A'}</TableCell>
-                          <TableCell className="font-medium">{d.destination}</TableCell>
-                          <TableCell>{d.trailerNumber}</TableCell>
-                          <TableCell>{format(parseISO(d.collectionTime), 'HH:mm')}</TableCell>
-                          <TableCell>{d.bayDoor}</TableCell>
-                          <TableCell>{d.sealNumber || 'N/A'}</TableCell>
-                          <TableCell>{d.driverName || 'N/A'}</TableCell>
-                          <TableCell>{d.scheduleNumber}</TableCell>
-                          <TableCell><Badge variant="outline" className="border-current">{d.status}</Badge></TableCell>
-                          <TableCell className="text-right">
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" onClick={() => handleShowRouteStatus(d)}>
-                                  <TrafficCone className="h-4 w-4 text-orange-400" />
-                                  <span className="sr-only">Route Status</span>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Check Route Status</p>
-                              </TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" onClick={() => handleEdit(d)}>
-                                  <Edit className="h-4 w-4" />
-                                  <span className="sr-only">Edit</span>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Edit Departure</p>
-                              </TooltipContent>
-                            </Tooltip>
-                             <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDelete(d)}>
-                                  <Trash2 className="h-4 w-4" />
-                                  <span className="sr-only">Delete</span>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Delete Departure</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  ) : (
-                    !isLoadingDepartures && <TableRow>
-                      <TableCell colSpan={11} className="text-center h-24">
-                        No departures scheduled. Use "Add Departure" to create a new one.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      </main>
-      <footer className="sticky bottom-0 border-t bg-background px-4 py-3 md:px-6 flex-shrink-0">
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
-            <span className="font-semibold text-base mr-2">Legend:</span>
-            {STATUSES.map((status) => (
-              <div key={status} className="flex items-center gap-2">
-                <div className={cn("h-3 w-3 rounded-full", statusColors[status])}></div>
-                <span>{status}</span>
+    <TooltipProvider>
+      <div className="flex flex-col h-screen">
+        <Header 
+          onImport={handleImportClick}
+          onExport={handleExport}
+          onAddNew={handleAddNew}
+        />
+        <main className="flex-1 flex flex-col space-y-4 p-4 md:p-8 pt-6 overflow-hidden">
+          <Card className="flex-1 flex flex-col overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between gap-2 md:gap-4">
+              <CardTitle>Departures</CardTitle>
+              <div className="bg-white p-1.5 rounded-md shadow-sm">
+                  <div className="w-[60px] h-auto md:w-[100px]">
+                      <Image src="https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png" alt="The Very Group Logo" width={120} height={47} className="h-auto w-full" />
+                  </div>
               </div>
-            ))}
-            <div className="ml-auto mt-2 md:mt-0">
-              <Button size="sm" variant="destructive" onClick={() => setIsClearDialogOpen(true)}>
-                <Trash2 className="mr-2 h-4 w-4" />
-                Clear All
+              <Button size="sm" onClick={handleAddNew} className="ml-auto">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  <span className="hidden md:inline">Add Departure</span>
+                  <span className="md:hidden">Add</span>
               </Button>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col overflow-hidden">
+              <input type="file" ref={fileInputRef} onChange={handleFileImport} accept=".xlsx, .xls" className="hidden" />
+              <div className="relative w-full overflow-auto">
+                <Table>
+                  <TableHeader className="bg-primary/90">
+                    <TableRow className="border-primary/90 hover:bg-primary/90">
+                      <TableHead className="text-primary-foreground">Carrier</TableHead>
+                      <TableHead className="text-primary-foreground">Via</TableHead>
+                      <TableHead className="text-primary-foreground">Destination</TableHead>
+                      <TableHead className="text-primary-foreground">Trailer</TableHead>
+                      <TableHead className="text-primary-foreground">Collection Time</TableHead>
+                      <TableHead className="text-primary-foreground">Bay</TableHead>
+                      <TableHead className="text-primary-foreground">Seal No.</TableHead>
+                      <TableHead className="text-primary-foreground">Driver</TableHead>
+                      <TableHead className="text-primary-foreground">Schedule No.</TableHead>
+                      <TableHead className="text-primary-foreground">Status</TableHead>
+                      <TableHead className="text-right text-primary-foreground">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoadingDepartures && (
+                      <TableRow>
+                        <TableCell colSpan={11} className="text-center h-24">Loading departures...</TableCell>
+                      </TableRow>
+                    )}
+                    {!isLoadingDepartures && departures && departures.length > 0 ? (
+                      departures.map(d => {
+                        const carrierStyle = carrierStyles[d.carrier];
+                        const IconComponent = carrierStyle?.icon;
+                        return (
+                          <TableRow key={d.id} className={cn('transition-colors', statusColors[d.status])}>
+                            <TableCell>
+                              <Badge className={cn('flex items-center gap-2', carrierStyle?.className)}>
+                                {IconComponent && <IconComponent className="h-4 w-4" />}
+                                {carrierStyle?.iconUrl && <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={16} height={16} className="rounded-sm" />}
+                                <span>{d.carrier}</span>
+                              </Badge>
+                            </TableCell>
+                            <TableCell>{d.via || 'N/A'}</TableCell>
+                            <TableCell className="font-medium">{d.destination}</TableCell>
+                            <TableCell>{d.trailerNumber}</TableCell>
+                            <TableCell>{format(parseISO(d.collectionTime), 'HH:mm')}</TableCell>
+                            <TableCell>{d.bayDoor}</TableCell>
+                            <TableCell>{d.sealNumber || 'N/A'}</TableCell>
+                            <TableCell>{d.driverName || 'N/A'}</TableCell>
+                            <TableCell>{d.scheduleNumber}</TableCell>
+                            <TableCell><Badge variant="outline" className="border-current">{d.status}</Badge></TableCell>
+                            <TableCell className="text-right">
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon" onClick={() => handleShowRouteStatus(d)}>
+                                    <TrafficCone className="h-4 w-4 text-orange-400" />
+                                    <span className="sr-only">Route Status</span>
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Verifică starea rutei</p>
+                                </TooltipContent>
+                              </Tooltip>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon" onClick={() => handleEdit(d)}>
+                                    <Edit className="h-4 w-4" />
+                                    <span className="sr-only">Edit</span>
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Edit Departure</p>
+                                </TooltipContent>
+                              </Tooltip>
+                               <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDelete(d)}>
+                                    <Trash2 className="h-4 w-4" />
+                                    <span className="sr-only">Delete</span>
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Delete Departure</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    ) : (
+                      !isLoadingDepartures && <TableRow>
+                        <TableCell colSpan={11} className="text-center h-24">
+                          No departures scheduled. Use "Add Departure" to create a new one.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+        <footer className="sticky bottom-0 border-t bg-background px-4 py-3 md:px-6 flex-shrink-0">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+              <span className="font-semibold text-base mr-2">Legend:</span>
+              {STATUSES.map((status) => (
+                <div key={status} className="flex items-center gap-2">
+                  <div className={cn("h-3 w-3 rounded-full", statusColors[status])}></div>
+                  <span>{status}</span>
+                </div>
+              ))}
+              <div className="ml-auto mt-2 md:mt-0">
+                <Button size="sm" variant="destructive" onClick={() => setIsClearDialogOpen(true)}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Clear All
+                </Button>
+              </div>
             </div>
-          </div>
-      </footer>
-      <EditDepartureDialog
-        isOpen={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        departure={editingDeparture}
-        onSave={handleSave}
-      />
-      <RouteStatusDialog
-        isOpen={isRouteStatusDialogOpen}
-        onOpenChange={setIsRouteStatusDialogOpen}
-        departure={selectedDepartureForStatus}
-        routeStatus={routeStatus}
-        isLoading={isRouteStatusLoading}
-      />
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the departure
-              for <span className="font-semibold">{deletingDeparture?.carrier}</span> with trailer <span className="font-semibold">{deletingDeparture?.trailerNumber}</span>.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      <AlertDialog open={isClearDialogOpen} onOpenChange={setIsClearDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete all departure data from the database.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleClearAll} className="bg-destructive hover:bg-destructive/90">Yes, delete everything</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+        </footer>
+        <EditDepartureDialog
+          isOpen={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          departure={editingDeparture}
+          onSave={handleSave}
+        />
+        <RouteStatusDialog
+          isOpen={isRouteStatusDialogOpen}
+          onOpenChange={setIsRouteStatusDialogOpen}
+          departure={selectedDepartureForStatus}
+          routeStatus={routeStatus}
+          isLoading={isRouteStatusLoading}
+        />
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the departure
+                for <span className="font-semibold">{deletingDeparture?.carrier}</span> with trailer <span className="font-semibold">{deletingDeparture?.trailerNumber}</span>.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        <AlertDialog open={isClearDialogOpen} onOpenChange={setIsClearDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete all departure data from the database.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleClearAll} className="bg-destructive hover:bg-destructive/90">Yes, delete everything</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </TooltipProvider>
   );
 }
 
