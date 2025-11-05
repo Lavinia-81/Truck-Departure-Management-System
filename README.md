@@ -1,63 +1,78 @@
-# Truck Departure Management System
+# Sistem de Management al Plecărilor de Camioane
 
-## 1. Project Overview
+## 1. Prezentare Generală
 
-This project is a modern, real-time truck departure management system designed to streamline logistics operations. It replaces manual, error-prone processes with a centralized, digital solution, providing complete visibility and control over truck dispatch schedules.
+Acest proiect este o platformă modernă, în timp real, pentru gestionarea plecărilor de camioane, concepută pentru a eficientiza operațiunile logistice. Acesta înlocuiește procesele manuale, predispuse la erori, cu o soluție digitală centralizată, oferind vizibilitate și control complet asupra programului de expediere.
 
-The primary goal is to reduce administrative overhead, minimize human error, and improve operational flow within the depot by offering a single source of truth for all stakeholders.
+Obiectivul principal este de a reduce sarcinile administrative, de a minimiza erorile umane și de a îmbunătăți fluxul operațional în depozit, oferind o singură sursă de adevăr pentru toate părțile implicate.
 
-## 2. Core Features
+## 2. Componente și Funcționalități
 
-The application is built around three key components:
+Aplicația este construită în jurul a trei componente cheie:
 
-### A. Admin Dashboard (`/`)
-The central command center for logistics personnel.
+### A. Panoul de Administrare (`/`)
+Acesta este centrul de comandă pentru personalul logistic, unde se desfășoară majoritatea operațiunilor.
 
-*   **Centralized Schedule Management:** Add, edit, and delete departures through an intuitive interface. All changes are reflected in real-time.
-*   **Intelligent Status Automation:** The system automatically updates a departure's status to `Delayed` if it has not departed within 10 minutes of its scheduled collection time, ensuring data accuracy.
-*   **Bulk Data Import/Export:** Quickly populate schedules by importing data from an **Excel** file and export the current view for reporting and analysis.
-*   **Real-Time Status Updates:** Instantly change a departure's status (e.g., from `Waiting` to `Loading`), ensuring all teams have up-to-the-minute information.
-*   **Live Route Hazard Checks:** Before a truck departs, operators can click a button to get an instant, AI-powered analysis of the planned route, identifying accidents, road closures, or heavy congestion.
+*   **Management Centralizat:**
+    *   **Butonul `Add Departure`:** Deschide o fereastră pentru adăugarea manuală a unei noi plecări.
+    *   **Butonul `Edit` (pictogramă creion):** Permite modificarea detaliilor unei plecări existente.
+    *   **Butonul `Delete` (pictogramă coș de gunoi):** Șterge o plecare din sistem (necesită confirmare).
 
-### B. Public Display Board (`/display`)
-A "Kiosk" mode screen designed for large monitors in driver waiting areas or the warehouse.
+*   **Import / Export:**
+    *   **Butonul `Import`:** Permite încărcarea rapidă a programului dintr-un fișier **Excel**, populând automat lista.
+    *   **Butonul `Export`:** Descarcă vizualizarea curentă într-un fișier Excel pentru raportare și analiză.
 
-*   **Clear, At-a-Glance Information:** Displays a chronologically sorted list of departures with essential details: carrier, destination, time, bay, and status.
-*   **Automatic Real-Time Updates:** The screen refreshes automatically whenever data is changed in the Admin Dashboard, requiring no manual intervention. It also features an auto-scroll function for long lists.
-*   **Visual Cues:** A color-coded legend helps in quickly identifying a truck's status, improving clarity and reducing repetitive questions.
+*   **Funcționalități Inteligente:**
+    *   **Automatizarea Statusului `Delayed`:** Sistemul actualizează automat statusul unei plecări la `Delayed` dacă aceasta nu a plecat și se află în una dintre următoarele situații:
+        1.  Are statusul `Waiting` și a depășit cu 10 minute ora programată.
+        2.  Are statusul `Loading` și a depășit ora programată.
+    *   **Verificare Pericole pe Rută (Buton `TrafficCone`):** Înainte ca un camion să plece, operatorii pot apăsa acest buton pentru a obține o analiză instantanee, bazată pe AI, a rutei planificate. Sistemul identifică accidente, drumuri închise sau aglomerație mare.
 
-### C. Route Optimizer (`/optimize`)
-An advanced, AI-powered tool to assist in planning the most efficient routes.
+*   **Navigație:**
+    *   **Butonul `Public Display`:** Deschide panoul public într-o filă nouă.
+    *   **Butonul `Route Optimizer`:** Navighează către pagina de optimizare a rutelor.
 
-*   **Intelligent Route Suggestions:** Based on the current location ("Sky Gate Derby DE74 2BB"), destination, and intermediate stops, the AI system suggests the optimal route, considering factors like traffic to reduce transit time and costs.
+*   **Management General:**
+    *   **Butonul `Clear All`:** Permite ștergerea completă a tuturor datelor din baza de date, pentru o resetare rapidă (necesită confirmare).
 
-## 3. Technology Stack
+### B. Panoul Public de Afișaj (`/display`)
+Un mod "Kiosk" proiectat pentru monitoare mari din zonele de așteptare ale șoferilor sau din depozit.
 
-The project is built on a modern, robust, and scalable technology foundation:
+*   **Informații Clare, dintr-o Privire:** Afișează o listă sortată cronologic a plecărilor, cu detalii esențiale: transportator, destinație, oră, poartă și status.
+*   **Actualizări Automate în Timp Real:** Ecranul se reîmprospătează automat la orice modificare în Panoul de Administrare, fără a necesita intervenție manuală. De asemenea, dispune de o funcție de derulare automată pentru listele lungi.
+*   **Indicii Vizuale:** O legendă codificată pe culori ajută la identificarea rapidă a statusului unui camion.
 
-*   **Framework:** **Next.js** (React) - For a fast, server-rendered user interface.
-*   **Database:** **Firebase Firestore** - For a real-time, serverless NoSQL database.
-*   **Artificial Intelligence:** **Genkit (Google AI)** - Powers the route optimization feature.
-*   **UI/Styling:** **Tailwind CSS** & **shadcn/ui** - For a professional, responsive, and modern design system.
+### C. Optimizatorul de Rute (`/optimize`)
+Un instrument avansat, bazat pe AI, pentru a asista la planificarea celor mai eficiente rute.
 
-## 4. Getting Started
+*   **Sugestii Inteligente de Rută:** Pe baza locației curente ("Sky Gate Derby DE74 2BB"), a destinației și a opririlor intermediare, sistemul AI sugerează ruta optimă, luând în considerare factori precum traficul pentru a reduce timpul de tranzit și costurile.
+*   **Butonul `Optimize Route`:** Inițiază procesul de analiză AI și afișează rezultatele.
 
-To run the project locally, follow these steps:
+## 3. Tehnologii Utilizate
 
-1.  **Install Dependencies:**
+*   **Framework:** **Next.js** (React) - Pentru o interfață rapidă, redată pe server.
+*   **Bază de date:** **Firebase Firestore** - Pentru o bază de date NoSQL serverless, în timp real.
+*   **Inteligență Artificială:** **Genkit (Google AI)** - Alimentează optimizarea rutelor și verificarea pericolelor.
+*   **Stilizare UI:** **Tailwind CSS** & **shadcn/ui** - Pentru un sistem de design modern, responsiv și profesional.
+
+## 4. Pornirea Proiectului
+
+Pentru a rula proiectul local, urmați acești pași:
+
+1.  **Instalați Dependințele:**
     ```bash
     npm install
     ```
 
-2.  **Set up Environment Variables:**
-    Create a `.env.local` file and add your Google AI API key:
+2.  **Configurați Variabilele de Mediu:**
+    Creați un fișier `.env.local` și adăugați cheia API de la Google AI:
     ```
-    GEMINI_API_KEY=YOUR_API_KEY_HERE
+    GEMINI_API_KEY=CHEIA_DVS_API_AICI
     ```
 
-3.  **Run the Development Server:**
+3.  **Porniți Serverul de Dezvoltare:**
     ```bash
     npm run dev
     ```
 
-The application will be available at `http://localhost:9002`.
+Aplicația va fi disponibilă la `http://localhost:9002`.
