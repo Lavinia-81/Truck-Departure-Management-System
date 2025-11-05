@@ -44,6 +44,7 @@ interface CarrierStyle {
     className: string;
     icon?: React.ComponentType<{ className?: string }>;
     iconUrl?: string;
+    logoClassName?: string;
 }
 
 const carrierStyles: Record<string, CarrierStyle> = {
@@ -51,7 +52,8 @@ const carrierStyles: Record<string, CarrierStyle> = {
     'EVRI': { className: 'bg-sky-500 hover:bg-sky-600 text-white border-sky-600', icon: Truck },
     'The Very Group': {
       className: 'bg-black hover:bg-gray-800 text-white border-gray-800',
-      iconUrl: 'https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png'
+      iconUrl: 'https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png',
+      logoClassName: 'bg-white p-1 rounded-sm'
     },
     'Yodel': { 
         className: 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700', 
@@ -408,7 +410,11 @@ export default function DepartureDashboard() {
                             <TableCell>
                               <Badge className={cn('flex items-center gap-2', carrierStyle?.className)}>
                                 {IconComponent && <IconComponent className="h-4 w-4" />}
-                                {carrierStyle?.iconUrl && <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={16} height={16} className="rounded-sm" />}
+                                {carrierStyle?.iconUrl && (
+                                  <div className={carrierStyle.logoClassName}>
+                                    <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={16} height={16} className="h-auto w-4" />
+                                  </div>
+                                )}
                                 <span>{d.carrier}</span>
                               </Badge>
                             </TableCell>
@@ -535,3 +541,5 @@ export default function DepartureDashboard() {
     </TooltipProvider>
   );
 }
+
+    

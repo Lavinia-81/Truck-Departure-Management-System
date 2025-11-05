@@ -27,11 +27,17 @@ interface CarrierStyle {
   className: string;
   icon?: React.ComponentType<{ className?: string }>;
   iconUrl?: string;
+  logoClassName?: string;
 }
 
 const carrierStyles: Record<string, CarrierStyle> = {
   'Royal Mail': { className: 'bg-red-500 hover:bg-red-600 text-white border-red-600', icon: Package },
   'EVRI': { className: 'bg-sky-500 hover:bg-sky-600 text-white border-sky-600', icon: Truck },
+  'The Very Group': {
+    className: 'bg-black hover:bg-gray-800 text-white border-gray-800',
+    iconUrl: 'https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png',
+    logoClassName: 'bg-white p-1 rounded-sm'
+  },
   'Yodel': {
     className: 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700',
     iconUrl: 'https://is2-ssl.mzstatic.com/image/thumb/Purple112/v4/c2/5d/ce/c25dce82-a611-5b02-4e4f-81b2d9d6ad97/AppIcon-0-0-1x_U007emarketing-0-0-0-10-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png'
@@ -88,7 +94,11 @@ export default function DisplayPage() {
             <TableCell>
               <Badge className={cn('flex items-center gap-2 text-base md:text-lg p-2', carrierStyle?.className)}>
                 {IconComponent && <IconComponent className="h-5 w-5 md:h-6 md:w-6" />}
-                {carrierStyle?.iconUrl && <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={24} height={24} className="rounded-sm" />}
+                 {carrierStyle?.iconUrl && (
+                  <div className={carrierStyle.logoClassName}>
+                    <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={24} height={24} className="h-auto w-6" />
+                  </div>
+                )}
                 <span>{d.carrier}</span>
               </Badge>
             </TableCell>
@@ -117,7 +127,11 @@ export default function DisplayPage() {
             <div className="flex justify-between items-center">
               <Badge className={cn('flex items-center gap-2 text-base p-2', carrierStyle?.className)}>
                   {IconComponent && <IconComponent className="h-5 w-5" />}
-                  {carrierStyle?.iconUrl && <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={20} height={20} className="rounded-sm" />}
+                  {carrierStyle?.iconUrl && (
+                    <div className={carrierStyle.logoClassName}>
+                      <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={20} height={20} className="h-auto w-5" />
+                    </div>
+                  )}
                   <span>{d.carrier}</span>
               </Badge>
               <Badge variant="outline" className="border-current text-base p-2">{d.status}</Badge>
@@ -244,3 +258,5 @@ export default function DisplayPage() {
     </div>
   );
 }
+
+    
