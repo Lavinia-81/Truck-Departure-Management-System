@@ -64,7 +64,7 @@ export function DepartureForm({ departure, onSave, onCancel }: DepartureFormProp
       id: departure?.id || '', // ID will be handled by parent component (Firestore)
       ...data,
       collectionTime: new Date(data.collectionTime).toISOString(),
-      bayDoor: data.bayDoor ? Number(data.bayDoor) : undefined,
+      bayDoor: data.bayDoor ? Number(data.bayDoor) : null,
     };
     onSave(newDeparture);
   }
