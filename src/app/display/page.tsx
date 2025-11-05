@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, Caravan, Truck, Anchor, Building, Calendar, Clock as ClockIcon, Tag, MapPin, ChevronRight, DoorOpen } from 'lucide-react';
+import { Package, Caravan, Truck, Anchor, Building, Calendar, Clock as ClockIcon, Tag, MapPin, ChevronRight, DoorOpen, Ship } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import type { Departure, Status, Carrier } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -47,15 +47,11 @@ const carrierStyles: Record<string, CarrierStyle> = {
   },
   'McBurney': { 
     className: 'bg-[#f1a10d] hover:bg-[#d98e0b] text-white border-[#d98e0b]', 
-    icon: <Anchor className="h-5 w-5" />
+    icon: <Ship className="h-5 w-5" />
   },
   'Montgomery': { 
     className: 'bg-[#DF5D20] hover:bg-[#c8541d] text-white border-[#c8541d]', 
-    icon: (
-      <div className="bg-red-600 rounded-full p-1">
-        <Truck className="h-5 w-5 text-white" />
-      </div>
-    )
+    icon: <Truck className="h-5 w-5" />
   },
 };
 

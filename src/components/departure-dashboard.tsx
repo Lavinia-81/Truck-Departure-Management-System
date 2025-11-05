@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Edit, Caravan, Truck, Package, Anchor, Building, Trash2, TrafficCone, AlertTriangle, CheckCircle2, PlusCircle } from 'lucide-react';
+import { Edit, Caravan, Truck, Package, Anchor, Building, Trash2, TrafficCone, AlertTriangle, CheckCircle2, PlusCircle, Ship } from 'lucide-react';
 import { format, parseISO, addMinutes } from 'date-fns';
 import type { Departure, Status, Carrier } from '@/lib/types';
 import { EditDepartureDialog } from './edit-departure-dialog';
@@ -64,15 +64,11 @@ const carrierStyles: Record<string, CarrierStyle> = {
     },
     'McBurney': { 
         className: 'bg-[#f1a10d] hover:bg-[#d98e0b] text-white border-[#d98e0b]', 
-        icon: <Anchor className="h-4 w-4" />
+        icon: <Ship className="h-4 w-4" />
     },
     'Montgomery': { 
         className: 'bg-[#DF5D20] hover:bg-[#c8541d] text-white border-[#c8541d]', 
-        icon: (
-            <div className="bg-red-600 rounded-full p-0.5">
-                <Truck className="h-4 w-4 text-white" />
-            </div>
-        )
+        icon: <Truck className="h-4 w-4" />
     },
 };
 
