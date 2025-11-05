@@ -36,7 +36,7 @@ const carrierStyles: Record<string, CarrierStyle> = {
     className: 'bg-sky-500 hover:bg-sky-600 text-white border-sky-600', 
     icon: (
       <div className="bg-white rounded-full p-1">
-        <Truck className="h-5 w-5 text-sky-500" />
+        <Building className="h-5 w-5 text-sky-500" />
       </div>
     )
   },
@@ -53,7 +53,7 @@ const carrierStyles: Record<string, CarrierStyle> = {
     className: 'bg-purple-500 hover:bg-purple-600 text-white border-purple-600', 
     icon: (
       <div className="bg-yellow-400 rounded-full p-1">
-          <Package className="h-5 w-5 text-black" />
+          <Caravan className="h-5 w-5 text-black" />
       </div>
     )
   },
@@ -61,7 +61,7 @@ const carrierStyles: Record<string, CarrierStyle> = {
     className: 'bg-orange-500 hover:bg-orange-600 text-white border-orange-600', 
     icon: (
       <div className="bg-red-600 rounded-full p-1">
-        <Truck className="h-5 w-5 text-white" />
+        <Anchor className="h-5 w-5 text-white" />
       </div>
     )
   },
