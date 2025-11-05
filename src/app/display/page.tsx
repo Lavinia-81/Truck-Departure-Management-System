@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, Truck, Anchor, Building, Calendar, Clock as ClockIcon, Tag, MapPin, ChevronRight, DoorOpen } from 'lucide-react';
+import { Package, Caravan, Truck, Anchor, Building, Calendar, Clock as ClockIcon, Tag, MapPin, ChevronRight, DoorOpen } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import type { Departure, Status, Carrier } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -32,7 +32,7 @@ interface CarrierStyle {
 
 const carrierStyles: Record<string, CarrierStyle> = {
   'Royal Mail': { className: 'bg-red-500 hover:bg-red-600 text-white border-red-600', icon: Package },
-  'EVRI': { className: 'bg-sky-500 hover:bg-sky-600 text-white border-sky-600', icon: Truck },
+  'EVRI': { className: 'bg-sky-500 hover:bg-sky-600 text-white border-sky-600', icon: Caravan },
   'The Very Group': {
     className: 'bg-black hover:bg-gray-800 text-white border-gray-800',
     iconUrl: 'https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png',
@@ -40,7 +40,7 @@ const carrierStyles: Record<string, CarrierStyle> = {
   },
   'Yodel': {
     className: 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700',
-    iconUrl: 'https://is2-ssl.mzstatic.com/image/thumb/Purple112/v4/c2/5d/ce/c25dce82-a611-5b02-4e4f-81b2d9d6ad97/AppIcon-0-0-1x_U007emarketing-0-0-0-10-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png'
+    icon: Truck
   },
   'McBurney': { className: 'bg-purple-500 hover:bg-purple-600 text-white border-purple-600', icon: Anchor },
   'Montgomery': { className: 'bg-orange-500 hover:bg-orange-600 text-white border-orange-600', icon: Building },

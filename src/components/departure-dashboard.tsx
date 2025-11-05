@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Edit, Truck, Package, Anchor, Building, Trash2, TrafficCone, AlertTriangle, CheckCircle2, PlusCircle } from 'lucide-react';
+import { Edit, Caravan, Truck, Package, Anchor, Building, Trash2, TrafficCone, AlertTriangle, CheckCircle2, PlusCircle } from 'lucide-react';
 import { format, parseISO, addMinutes } from 'date-fns';
 import type { Departure, Status, Carrier } from '@/lib/types';
 import { EditDepartureDialog } from './edit-departure-dialog';
@@ -49,7 +49,7 @@ interface CarrierStyle {
 
 const carrierStyles: Record<string, CarrierStyle> = {
     'Royal Mail': { className: 'bg-red-500 hover:bg-red-600 text-white border-red-600', icon: Package },
-    'EVRI': { className: 'bg-sky-500 hover:bg-sky-600 text-white border-sky-600', icon: Truck },
+    'EVRI': { className: 'bg-sky-500 hover:bg-sky-600 text-white border-sky-600', icon: Caravan },
     'The Very Group': {
       className: 'bg-black hover:bg-gray-800 text-white border-gray-800',
       iconUrl: 'https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png',
@@ -57,7 +57,7 @@ const carrierStyles: Record<string, CarrierStyle> = {
     },
     'Yodel': { 
         className: 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700', 
-        iconUrl: 'https://is2-ssl.mzstatic.com/image/thumb/Purple112/v4/c2/5d/ce/c25dce82-a611-5b02-4e4f-81b2d9d6ad97/AppIcon-0-0-1x_U007emarketing-0-0-0-10-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png'
+        icon: Truck
     },
     'McBurney': { className: 'bg-purple-500 hover:bg-purple-600 text-white border-purple-600', icon: Anchor },
     'Montgomery': { className: 'bg-orange-500 hover:bg-orange-600 text-white border-orange-600', icon: Building },
@@ -269,7 +269,7 @@ export default function DepartureDashboard() {
             via: row['Via'] === 'N/A' ? '' : row['Via'],
             trailerNumber: String(row['Trailer']),
             collectionTime: collectionTime.toISOString(),
-            bayDoor: row['Bay'] === 'N/A' ? undefined : Number(row['Bay']),
+            bayDoor: row['Bay'] === 'N/A' ? null : Number(row['Bay']),
             sealNumber: row['Seal No.'] === 'N/A' ? '' : String(row['Seal No.']),
             driverName: row['Driver'] === 'N/A' ? '' : String(row['Driver']),
             scheduleNumber: String(row['Schedule No.']),
