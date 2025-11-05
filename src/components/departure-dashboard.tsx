@@ -66,7 +66,14 @@ const carrierStyles: Record<string, CarrierStyle> = {
         className: 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700', 
         icon: <Truck className="h-4 w-4" />
     },
-    'McBurney': { className: 'bg-purple-500 hover:bg-purple-600 text-white border-purple-600', icon: <Anchor className="h-4 w-4" /> },
+    'McBurney': { 
+        className: 'bg-purple-500 hover:bg-purple-600 text-white border-purple-600', 
+        icon: (
+          <div className="bg-yellow-400 rounded-full p-0.5">
+              <Package className="h-4 w-4 text-black" />
+          </div>
+        )
+    },
     'Montgomery': { 
         className: 'bg-orange-500 hover:bg-orange-600 text-white border-orange-600', 
         icon: (
