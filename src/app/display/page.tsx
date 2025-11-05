@@ -106,7 +106,7 @@ export default function DisplayPage() {
             <TableCell className="font-medium">{d.destination}</TableCell>
             <TableCell>{d.trailerNumber}</TableCell>
             <TableCell className="font-bold text-xl md:text-2xl">{format(parseISO(d.collectionTime), 'HH:mm')}</TableCell>
-            <TableCell className="font-bold text-xl md:text-2xl">{d.bayDoor}</TableCell>
+            <TableCell className="font-bold text-xl md:text-2xl">{d.bayDoor || 'N/A'}</TableCell>
             <TableCell>
               <Badge variant="outline" className="border-current text-base md:text-lg p-2">
                 {d.status}
@@ -143,7 +143,7 @@ export default function DisplayPage() {
             </div>
             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                 <div className="flex items-center"><ClockIcon className="h-4 w-4 mr-2 text-muted-foreground" /> <span className="font-bold text-base">{format(parseISO(d.collectionTime), 'HH:mm')}</span></div>
-                <div className="flex items-center"><DoorOpen className="h-4 w-4 mr-2 text-muted-foreground" /> Bay <span className="font-bold text-base ml-2">{d.bayDoor}</span></div>
+                <div className="flex items-center"><DoorOpen className="h-4 w-4 mr-2 text-muted-foreground" /> Bay <span className="font-bold text-base ml-2">{d.bayDoor || 'N/A'}</span></div>
                 <div className="flex items-center"><Tag className="h-4 w-4 mr-2 text-muted-foreground" /> {d.trailerNumber}</div>
                 {d.sealNumber && <div className="flex items-center"><Tag className="h-4 w-4 mr-2 text-muted-foreground" /> {d.sealNumber}</div>}
             </div>
@@ -258,5 +258,3 @@ export default function DisplayPage() {
     </div>
   );
 }
-
-    

@@ -212,7 +212,7 @@ export default function DepartureDashboard() {
       'Destination': d.destination,
       'Trailer': d.trailerNumber,
       'Collection Time': format(parseISO(d.collectionTime), 'yyyy-MM-dd HH:mm'),
-      'Bay': d.bayDoor,
+      'Bay': d.bayDoor || 'N/A',
       'Seal No.': d.sealNumber || 'N/A',
       'Driver': d.driverName || 'N/A',
       'Schedule No.': d.scheduleNumber,
@@ -269,7 +269,7 @@ export default function DepartureDashboard() {
             via: row['Via'] === 'N/A' ? '' : row['Via'],
             trailerNumber: String(row['Trailer']),
             collectionTime: collectionTime.toISOString(),
-            bayDoor: Number(row['Bay']),
+            bayDoor: row['Bay'] === 'N/A' ? undefined : Number(row['Bay']),
             sealNumber: row['Seal No.'] === 'N/A' ? '' : String(row['Seal No.']),
             driverName: row['Driver'] === 'N/A' ? '' : String(row['Driver']),
             scheduleNumber: String(row['Schedule No.']),
@@ -422,7 +422,7 @@ export default function DepartureDashboard() {
                             <TableCell className="font-medium">{d.destination}</TableCell>
                             <TableCell>{d.trailerNumber}</TableCell>
                             <TableCell>{format(parseISO(d.collectionTime), 'HH:mm')}</TableCell>
-                            <TableCell>{d.bayDoor}</TableCell>
+                            <TableCell>{d.bayDoor || 'N/A'}</TableCell>
                             <TableCell>{d.sealNumber || 'N/A'}</TableCell>
                             <TableCell>{d.driverName || 'N/A'}</TableCell>
                             <TableCell>{d.scheduleNumber}</TableCell>
@@ -541,5 +541,3 @@ export default function DepartureDashboard() {
     </TooltipProvider>
   );
 }
-
-    

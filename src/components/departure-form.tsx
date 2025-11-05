@@ -16,7 +16,7 @@ const formSchema = z.object({
   destination: z.string().min(2, "Destination is required."),
   trailerNumber: z.string().min(1, "Trailer number is required."),
   collectionTime: z.string().refine((val) => !isNaN(Date.parse(val)), "Invalid date format"),
-  bayDoor: z.coerce.number().int().min(1, "Bay door is required."),
+  bayDoor: z.coerce.number().int().optional().or(z.literal('')),
   sealNumber: z.string().optional(),
   driverName: z.string().optional(),
   scheduleNumber: z.string().min(1, "Schedule number is required."),
@@ -39,6 +39,7 @@ export function DepartureForm({ departure, onSave, onCancel }: DepartureFormProp
         sealNumber: departure.sealNumber || '',
         driverName: departure.driverName || '',
         collectionTime: format(parseISO(departure.collectionTime), "yyyy-MM-dd'T'HH:mm"),
+        bayDoor: departure.bayDoor || '',
       }
     : {
         carrier: 'Royal Mail',
@@ -46,7 +47,7 @@ export function DepartureForm({ departure, onSave, onCancel }: DepartureFormProp
         collectionTime: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
         destination: '',
         trailerNumber: '',
-        bayDoor: 1,
+        bayDoor: '',
         scheduleNumber: '',
         via: '',
         sealNumber: '',
@@ -63,6 +64,7 @@ export function DepartureForm({ departure, onSave, onCancel }: DepartureFormProp
       id: departure?.id || '', // ID will be handled by parent component (Firestore)
       ...data,
       collectionTime: new Date(data.collectionTime).toISOString(),
+      bayDoor: data.bayDoor ? Number(data.bayDoor) : undefined,
     };
     onSave(newDeparture);
   }
@@ -112,7 +114,7 @@ export function DepartureForm({ departure, onSave, onCancel }: DepartureFormProp
           <FormField control={form.control} name="trailerNumber" render={({ field }) => (<FormItem><FormLabel>Trailer Number</FormLabel><FormControl><Input placeholder="e.g., TR-12345" {...field} /></FormControl><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="scheduleNumber" render={({ field }) => (<FormItem><FormLabel>Schedule Number</FormLabel><FormControl><Input placeholder="e.g., SCH-001" {...field} /></FormControl><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="collectionTime" render={({ field }) => (<FormItem><FormLabel>Collection Time</FormLabel><FormControl><Input type="datetime-local" {...field} /></FormControl><FormMessage /></FormItem>)} />
-          <FormField control={form.control} name="bayDoor" render={({ field }) => (<FormItem><FormLabel>Bay Door</FormLabel><FormControl><Input type="number" placeholder="e.g., 5" {...field} /></FormControl><FormMessage /></FormItem>)} />
+          <FormField control={form.control} name="bayDoor" render={({ field }) => (<FormItem><FormLabel>Bay Door</FormLabel><FormControl><Input type="number" placeholder="e.g., 5 (optional)" {...field} /></FormControl><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="sealNumber" render={({ field }) => (<FormItem><FormLabel>Seal Number</FormLabel><FormControl><Input placeholder="e.g., S-RM123 (optional)" {...field} /></FormControl><FormMessage /></FormItem>)} />
           <FormField control={form.control} name="driverName" render={({ field }) => (<FormItem><FormLabel>Driver Name</FormLabel><FormControl><Input placeholder="e.g., John Doe (optional)" {...field} /></FormControl><FormMessage /></FormItem>)} />
         </div>

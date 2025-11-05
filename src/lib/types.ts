@@ -11,7 +11,7 @@ export interface Departure {
   via?: string;
   trailerNumber: string;
   collectionTime: string; // ISO string format for date and time
-  bayDoor: number;
+  bayDoor?: number;
   sealNumber?: string;
   driverName?: string;
   scheduleNumber: string;
