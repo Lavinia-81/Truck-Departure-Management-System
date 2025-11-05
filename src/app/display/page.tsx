@@ -43,14 +43,14 @@ const carrierStyles: Record<string, CarrierStyle> = {
   },
   'Yodel': {
     className: 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700',
-    icon: <Truck className="h-5 w-5" />
+    icon: <Caravan className="h-5 w-5" />
   },
   'McBurney': { 
     className: 'bg-[#f1a10d] hover:bg-[#d98e0b] text-white border-[#d98e0b]', 
     icon: <Anchor className="h-5 w-5" />
   },
   'Montgomery': { 
-    className: 'bg-orange-500 hover:bg-orange-600 text-white border-orange-600', 
+    className: 'bg-[#DF5D20] hover:bg-[#c8541d] text-white border-[#c8541d]', 
     icon: (
       <div className="bg-red-600 rounded-full p-1">
         <Truck className="h-5 w-5 text-white" />
@@ -269,3 +269,5 @@ export default function DisplayPage() {
     </div>
   );
 }
+
+    
