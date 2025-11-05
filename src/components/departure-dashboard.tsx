@@ -58,8 +58,8 @@ const carrierStyles: Record<string, CarrierStyle> = {
       iconUrl: 'https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png',
       logoClassName: 'bg-white p-1 rounded-sm'
     },
-    'Yodel': { 
-        className: 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700', 
+    'Yodel': {
+        className: 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700',
         icon: <Caravan className="h-4 w-4" />
     },
     'McBurney': { 
