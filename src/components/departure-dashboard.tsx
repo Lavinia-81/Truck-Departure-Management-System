@@ -163,8 +163,8 @@ export default function DepartureDashboard() {
         description = "You have reached the API request limit. Please wait one minute before trying again."
         
         ;
-      } else if (e.message && e.message.includes('API key not valid')) {
-        description = "Cheia API pentru serviciul AI nu este validă sau nu a fost configurată. Verificați variabila de mediu GEMINI_API_KEY.";
+      } else if (e.message && (e.message.includes('API key not valid') || e.message.includes('GEMINI_API_KEY'))) {
+        description = "The API key for the AI service is not valid or not configured. Check the GEMINI_API_KEY environment variable.";
       }
       toast({
         variant: "destructive",
@@ -448,7 +448,7 @@ export default function DepartureDashboard() {
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p>Verifică starea rutei</p>
+                                  <p>Check Route Status</p>
                                 </TooltipContent>
                               </Tooltip>
                               <Tooltip>
@@ -540,7 +540,7 @@ export default function DepartureDashboard() {
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete all departure data from the database.
+                This action cannot be undone. This will permanently delete all departure data from local storage.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

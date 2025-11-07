@@ -47,9 +47,9 @@ export default function RouteOptimizerPage() {
     } catch (e: any) {
       console.error(e);
       if (e.message && e.message.includes('429')) {
-        setError("Ați atins limita de cereri API. Vă rugăm să așteptați un minut înainte de a încerca din nou sau verificați configurația cheii API în Vercel.");
+        setError("You have reached the API request limit. Please wait a minute before trying again or check your API key configuration.");
       } else {
-        setError("Optimizarea rutei a eșuat. Asigurați-vă că ați configurat cheia GEMINI_API_KEY în setările de mediu (Environment Variables) din Vercel și încercați din nou.");
+        setError("Route optimization failed. Ensure you have configured the GEMINI_API_KEY in your environment variables and try again.");
       }
     } finally {
       setIsLoading(false);
@@ -57,7 +57,7 @@ export default function RouteOptimizerPage() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-4 md:p-8">
       <Card>
         <CardHeader>
           <CardTitle>Route Optimization</CardTitle>
