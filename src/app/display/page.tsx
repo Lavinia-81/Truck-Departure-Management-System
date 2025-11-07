@@ -1,16 +1,16 @@
 "use client";
 
-import { useMemo, useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, Caravan, Truck, Anchor, Building, Calendar, Clock as ClockIcon, Tag, MapPin, ChevronRight, DoorOpen, Ship, Route } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Package, Truck, Ship, Route, Clock as ClockIcon, Tag, MapPin, ChevronRight, DoorOpen } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
-import type { Departure, Status, Carrier } from '@/lib/types';
+import type { Departure, Status } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { db } from '@/firebase/firebase';
 import Clock from '@/components/clock';
 import { STATUSES } from '@/lib/types';
 import './scrolling-animation.css';
@@ -57,17 +57,30 @@ const carrierStyles: Record<string, CarrierStyle> = {
 
 
 export default function DisplayPage() {
-  const firestore = useFirestore();
-  const departuresQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'dispatchSchedules'), orderBy('collectionTime', 'asc'));
-  }, [firestore]);
-  const { data: departures, isLoading: isLoadingDepartures } = useCollection<Departure>(departuresQuery);
+  const [departures, setDepartures] = useState<Departure[]>([]);
+  const [isLoadingDepartures, setIsLoadingDepartures] = useState(true);
   
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const tableBodyRef = useRef<HTMLTableSectionElement>(null);
   const mobileContainerRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
+  
+  useEffect(() => {
+    const q = query(collection(db, 'dispatchSchedules'), orderBy('collectionTime', 'asc'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const departuresData: Departure[] = [];
+      querySnapshot.forEach((doc) => {
+        departuresData.push({ id: doc.id, ...doc.data() } as Departure);
+      });
+      setDepartures(departuresData);
+      setIsLoadingDepartures(false);
+    }, (error) => {
+      console.error("Error fetching departures: ", error);
+      setIsLoadingDepartures(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
   
   useEffect(() => {
     if (isLoadingDepartures) return;
@@ -86,11 +99,8 @@ export default function DisplayPage() {
         }
     };
     
-    // Use a small delay to allow the DOM to update before checking overflow.
     const timer = setTimeout(checkOverflow, 100);
-
     const debouncedCheckOverflow = () => setTimeout(checkOverflow, 100);
-
     window.addEventListener('resize', debouncedCheckOverflow);
 
     return () => {
@@ -168,12 +178,7 @@ export default function DisplayPage() {
     });
   };
 
-  const animationDuration = useMemo(() => {
-    // Adjust speed based on number of rows. ~15 seconds per item.
-    if (!departures) return 0;
-    return departures.length * 15;
-  }, [departures]);
-
+  const animationDuration = departures.length * 15;
 
   return (
     <div className="flex flex-col h-screen bg-background text-lg md:text-xl">
