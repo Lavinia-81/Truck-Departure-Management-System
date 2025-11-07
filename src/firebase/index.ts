@@ -9,6 +9,9 @@ import {
   setDoc,
   addDoc,
   deleteDoc,
+  collection,
+  doc,
+  writeBatch,
   CollectionReference,
   DocumentReference,
   SetOptions,
@@ -40,31 +43,41 @@ export function initializeFirebase(): FirebaseServices {
 
 // SECTION: Non-blocking Firestore writes
 
-export function setDocumentNonBlocking(
+export async function setDocumentNonBlocking(
   docRef: DocumentReference,
   data: any,
   options?: SetOptions
 ) {
-  setDoc(docRef, data, options || {}).catch(error => {
+  try {
+    await setDoc(docRef, data, options || {});
+  } catch (error) {
     console.error('Firestore Error (setDoc):', error);
-  });
+  }
 }
 
-export function addDocumentNonBlocking(colRef: CollectionReference, data: any) {
-  addDoc(colRef, data).catch(error => {
+export async function addDocumentNonBlocking(
+  colRef: CollectionReference,
+  data: any
+) {
+  try {
+    await addDoc(colRef, data);
+  } catch (error) {
     console.error('Firestore Error (addDoc):', error);
-  });
+  }
 }
 
-export function deleteDocumentNonBlocking(docRef: DocumentReference) {
-  deleteDoc(docRef).catch(error => {
+export async function deleteDocumentNonBlocking(docRef: DocumentReference) {
+  try {
+    await deleteDoc(docRef);
+  } catch (error) {
     console.error('Firestore Error (deleteDoc):', error);
-  });
+  }
 }
+
 
 // SECTION: Memoization Hook
 
-export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T {
+export function useMemoFirebase<T>(factory: () => T | null, deps: DependencyList): T | null {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(factory, deps);
 }
