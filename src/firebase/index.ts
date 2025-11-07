@@ -5,16 +5,7 @@ import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import {
   getFirestore,
-  Firestore,
-  setDoc,
-  addDoc,
-  deleteDoc,
-  collection,
-  doc,
-  writeBatch,
-  CollectionReference,
-  DocumentReference,
-  SetOptions,
+  Firestore
 } from 'firebase/firestore';
 import { useMemo, type DependencyList } from 'react';
 
@@ -39,39 +30,6 @@ export function initializeFirebase(): FirebaseServices {
 
   firebaseServices = { app, auth, firestore };
   return firebaseServices;
-}
-
-// SECTION: Non-blocking Firestore writes
-
-export async function setDocumentNonBlocking(
-  docRef: DocumentReference,
-  data: any,
-  options?: SetOptions
-) {
-  try {
-    await setDoc(docRef, data, options || {});
-  } catch (error) {
-    console.error('Firestore Error (setDoc):', error);
-  }
-}
-
-export async function addDocumentNonBlocking(
-  colRef: CollectionReference,
-  data: any
-) {
-  try {
-    await addDoc(colRef, data);
-  } catch (error) {
-    console.error('Firestore Error (addDoc):', error);
-  }
-}
-
-export async function deleteDocumentNonBlocking(docRef: DocumentReference) {
-  try {
-    await deleteDoc(docRef);
-  } catch (error) {
-    console.error('Firestore Error (deleteDoc):', error);
-  }
 }
 
 

@@ -24,8 +24,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import Header from './header';
-import { useCollection, useFirestore, useMemoFirebase, addDocumentNonBlocking, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
-import { collection, doc, writeBatch, getDocs, query, orderBy } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc, writeBatch, getDocs, query, orderBy, addDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { STATUSES, CARRIERS } from '@/lib/types';
 import { suggestOptimizedRoute, type SuggestOptimizedRouteOutput } from '@/ai/flows/suggest-optimized-route';
@@ -102,6 +102,9 @@ export default function DepartureDashboard() {
 
     const interval = setInterval(() => {
       const now = new Date();
+      const batch = writeBatch(firestore);
+      let batchHasWrites = false;
+
       departures.forEach(d => {
         if (d.status === 'Departed' || d.status === 'Cancelled' || d.status === 'Delayed') {
             return;
@@ -118,9 +121,14 @@ export default function DepartureDashboard() {
 
         if (shouldBeDelayed) {
             const departureRef = doc(firestore, 'dispatchSchedules', d.id);
-            setDocumentNonBlocking(departureRef, { status: 'Delayed' }, { merge: true });
+            batch.update(departureRef, { status: 'Delayed' });
+            batchHasWrites = true;
         }
       });
+
+      if (batchHasWrites) {
+        batch.commit().catch(err => console.error("Failed to auto-update statuses to Delayed:", err));
+      }
     }, 60000); // Check every minute
 
     return () => clearInterval(interval);
@@ -172,44 +180,63 @@ export default function DepartureDashboard() {
     }
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deletingDeparture && firestore) {
-      const departureRef = doc(firestore, 'dispatchSchedules', deletingDeparture.id);
-      deleteDocumentNonBlocking(departureRef);
-      toast({
-        title: "Departure Deleted",
-        description: `The departure for ${deletingDeparture.carrier} has been deleted.`,
-      });
-      setIsDeleteDialogOpen(false);
-      setDeletingDeparture(null);
+      try {
+        const departureRef = doc(firestore, 'dispatchSchedules', deletingDeparture.id);
+        await deleteDoc(departureRef);
+        toast({
+          title: "Departure Deleted",
+          description: `The departure for ${deletingDeparture.carrier} has been deleted.`,
+        });
+      } catch (error) {
+        console.error("Error deleting document: ", error);
+        toast({
+          variant: "destructive",
+          title: "Delete failed",
+          description: "Could not delete the departure. Please try again.",
+        });
+      } finally {
+        setIsDeleteDialogOpen(false);
+        setDeletingDeparture(null);
+      }
     }
   };
 
-  const handleSave = (savedDeparture: Departure) => {
+  const handleSave = async (savedDeparture: Departure) => {
     if (!firestore) return;
     const { id, ...departureData } = savedDeparture;
     const isNew = !id;
     const departuresCol = collection(firestore, 'dispatchSchedules');
     
-    if (isNew) {
-        addDocumentNonBlocking(departuresCol, departureData);
+    try {
+      if (isNew) {
+          await addDoc(departuresCol, departureData);
+          toast({
+              title: "Departure Added",
+              description: `A new departure for ${savedDeparture.carrier} has been added.`
+          });
+      } else {
+          const originalDeparture = departures?.find(d => d.id === id);
+          if (originalDeparture?.status !== 'Departed' && savedDeparture.status === 'Departed') {
+              toast({
+                  title: "Truck Departed",
+                  description: `Trailer ${savedDeparture.trailerNumber} for ${savedDeparture.carrier} has departed.`,
+              });
+          }
+          const departureRef = doc(firestore, 'dispatchSchedules', id);
+          await setDoc(departureRef, departureData, { merge: true });
+          toast({
+              title: "Departure Updated",
+              description: `The departure for ${savedDeparture.carrier} has been updated.`
+          });
+      }
+    } catch (error) {
+        console.error("Error saving document: ", error);
         toast({
-            title: "Departure Added",
-            description: `A new departure for ${savedDeparture.carrier} has been added.`
-        });
-    } else {
-        const originalDeparture = departures?.find(d => d.id === id);
-        if (originalDeparture?.status !== 'Departed' && savedDeparture.status === 'Departed') {
-            toast({
-                title: "Truck Departed",
-                description: `Trailer ${savedDeparture.trailerNumber} for ${savedDeparture.carrier} has departed.`,
-            });
-        }
-        const departureRef = doc(firestore, 'dispatchSchedules', id);
-        setDocumentNonBlocking(departureRef, departureData, { merge: true });
-        toast({
-            title: "Departure Updated",
-            description: `The departure for ${savedDeparture.carrier} has been updated.`
+          variant: "destructive",
+          title: "Save failed",
+          description: "Could not save the departure. Please try again.",
         });
     }
   };
