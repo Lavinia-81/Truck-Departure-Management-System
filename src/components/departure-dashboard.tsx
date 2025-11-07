@@ -318,19 +318,30 @@ export default function DepartureDashboard() {
           
           if (isNaN(collectionTime.getTime())) return null;
 
+          const getTrimmedString = (value: any): string => (value ? String(value).trim() : '');
+
+          const carrier = getTrimmedString(row['Carrier']);
+          const destination = getTrimmedString(row['Destination']);
+          const trailerNumber = getTrimmedString(row['Trailer']);
+          const scheduleNumber = getTrimmedString(row['Schedule No.']);
+
+          if (!carrier || !destination || !trailerNumber || !scheduleNumber) {
+            return null;
+          }
+
           return {
-            carrier: row['Carrier']?.trim() || '',
-            destination: row['Destination']?.trim() || '',
-            via: row['Via'] === 'N/A' ? '' : row['Via']?.trim() || '',
-            trailerNumber: String(row['Trailer'] || '').trim(),
+            carrier: carrier,
+            destination: destination,
+            via: row['Via'] === 'N/A' ? '' : getTrimmedString(row['Via']),
+            trailerNumber: trailerNumber,
             collectionTime: collectionTime.toISOString(),
-            bayDoor: row['Bay'] === 'N/A' ? null : Number(row['Bay']),
-            sealNumber: row['Seal No.'] === 'N/A' ? '' : String(row['Seal No.'] || '').trim(),
-            driverName: row['Driver'] === 'N/A' ? '' : String(row['Driver'] || '').trim(),
-            scheduleNumber: String(row['Schedule No.'] || '').trim(),
-            status: row['Status']?.trim() || 'Waiting',
+            bayDoor: row['Bay'] === 'N/A' || !row['Bay'] ? null : Number(row['Bay']),
+            sealNumber: row['Seal No.'] === 'N/A' ? '' : getTrimmedString(row['Seal No.']),
+            driverName: row['Driver'] === 'N/A' ? '' : getTrimmedString(row['Driver']),
+            scheduleNumber: scheduleNumber,
+            status: getTrimmedString(row['Status']) as Status || 'Waiting',
           };
-        }).filter((d): d is Omit<Departure, 'id'> => d !== null && d.carrier && d.destination && d.collectionTime && d.trailerNumber);
+        }).filter((d): d is Omit<Departure, 'id'> => d !== null);
 
         if (newDepartures.length > 0) {
             const batch = writeBatch(db);
