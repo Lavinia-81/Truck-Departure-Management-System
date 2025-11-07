@@ -9,11 +9,11 @@ import { Package, Truck, Ship, Route, Clock as ClockIcon, Tag, MapPin, ChevronRi
 import { format, parseISO } from 'date-fns';
 import type { Departure, Status } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
-import { db } from '@/firebase/firebase';
+import { collection, query, orderBy } from 'firebase/firestore';
 import Clock from '@/components/clock';
 import { STATUSES } from '@/lib/types';
 import './scrolling-animation.css';
+import { useCollection, useFirestore } from '@/firebase';
 
 const statusColors: Record<Status, string> = {
   Departed: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800',
@@ -57,33 +57,18 @@ const carrierStyles: Record<string, CarrierStyle> = {
 
 
 export default function DisplayPage() {
-  const [departures, setDepartures] = useState<Departure[]>([]);
-  const [isLoadingDepartures, setIsLoadingDepartures] = useState(true);
-  
+  const firestore = useFirestore();
+  const departuresQuery = firestore ? query(collection(firestore, 'dispatchSchedules'), orderBy('collectionTime', 'asc')) : null;
+  const { data: departures, isLoading: isLoadingDepartures } = useCollection<Departure>(departuresQuery);
+
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const tableBodyRef = useRef<HTMLTableSectionElement>(null);
   const mobileContainerRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
   
-  useEffect(() => {
-    const q = query(collection(db, 'dispatchSchedules'), orderBy('collectionTime', 'asc'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const departuresData: Departure[] = [];
-      querySnapshot.forEach((doc) => {
-        departuresData.push({ id: doc.id, ...doc.data() } as Departure);
-      });
-      setDepartures(departuresData);
-      setIsLoadingDepartures(false);
-    }, (error) => {
-      console.error("Error fetching departures: ", error);
-      setIsLoadingDepartures(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
   
   useEffect(() => {
-    if (isLoadingDepartures) return;
+    if (isLoadingDepartures || !departures) return;
 
     const checkOverflow = () => {
         const isMobile = window.innerWidth < 768;
@@ -178,7 +163,7 @@ export default function DisplayPage() {
     });
   };
 
-  const animationDuration = departures.length * 15;
+  const animationDuration = departures ? departures.length * 15 : 0;
 
   return (
     <div className="flex flex-col h-screen bg-background text-lg md:text-xl">

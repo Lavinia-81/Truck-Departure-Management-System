@@ -24,13 +24,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import Header from './header';
-import { db } from '@/firebase/firebase';
-import { collection, doc, writeBatch, getDocs, query, orderBy, addDoc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, writeBatch, getDocs, query, orderBy, addDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { Loader2, Package, Truck } from 'lucide-react';
 import { STATUSES } from '@/lib/types';
 import { suggestOptimizedRoute, type SuggestOptimizedRouteOutput } from '@/ai/flows/suggest-optimized-route';
 import { RouteStatusDialog } from './route-status-dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { useCollection, useFirestore } from '@/firebase';
 
 const statusColors: Record<Status, string> = {
   Departed: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800',
@@ -74,8 +74,10 @@ const carrierStyles: Record<string, CarrierStyle> = {
 
 
 export default function DepartureDashboard() {
-  const [departures, setDepartures] = useState<Departure[]>([]);
-  const [isLoadingDepartures, setIsLoadingDepartures] = useState(true);
+  const firestore = useFirestore();
+  const departuresQuery = firestore ? query(collection(firestore, 'dispatchSchedules'), orderBy('collectionTime', 'asc')) : null;
+  const { data: departures, isLoading: isLoadingDepartures, error } = useCollection<Departure>(departuresQuery);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingDeparture, setEditingDeparture] = useState<Departure | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -90,34 +92,22 @@ export default function DepartureDashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const q = query(collection(db, 'dispatchSchedules'), orderBy('collectionTime', 'asc'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const departuresData: Departure[] = [];
-      querySnapshot.forEach((doc) => {
-        departuresData.push({ id: doc.id, ...doc.data() } as Departure);
-      });
-      setDepartures(departuresData);
-      setIsLoadingDepartures(false);
-    }, (error) => {
-      console.error("Error fetching departures: ", error);
+    if (error) {
       toast({
         variant: "destructive",
         title: "Failed to load data",
-        description: "Could not fetch departures from the database.",
+        description: "Could not fetch departures from the database. Check console for details.",
       });
-      setIsLoadingDepartures(false);
-    });
-
-    return () => unsubscribe();
-  }, [toast]);
+    }
+  }, [error, toast]);
 
 
   useEffect(() => {
-    if (!departures || isLoadingDepartures) return;
+    if (!departures || isLoadingDepartures || !firestore) return;
 
     const interval = setInterval(() => {
       const now = new Date();
-      const batch = writeBatch(db);
+      const batch = writeBatch(firestore);
       let batchHasWrites = false;
 
       departures.forEach(d => {
@@ -135,7 +125,7 @@ export default function DepartureDashboard() {
         }
 
         if (shouldBeDelayed) {
-            const departureRef = doc(db, 'dispatchSchedules', d.id);
+            const departureRef = doc(firestore, 'dispatchSchedules', d.id);
             batch.update(departureRef, { status: 'Delayed' });
             batchHasWrites = true;
         }
@@ -147,7 +137,7 @@ export default function DepartureDashboard() {
     }, 60000); // Check every minute
 
     return () => clearInterval(interval);
-  }, [departures, isLoadingDepartures]);
+  }, [departures, isLoadingDepartures, firestore]);
 
   const handleAddNew = () => {
     setEditingDeparture(null);
@@ -198,9 +188,9 @@ export default function DepartureDashboard() {
   };
 
   const confirmDelete = async () => {
-    if (deletingDeparture) {
+    if (deletingDeparture && firestore) {
       try {
-        await deleteDoc(doc(db, 'dispatchSchedules', deletingDeparture.id));
+        await deleteDoc(doc(firestore, 'dispatchSchedules', deletingDeparture.id));
         toast({
           title: "Departure Deleted",
           description: `The departure for ${deletingDeparture.carrier} has been deleted.`,
@@ -220,12 +210,13 @@ export default function DepartureDashboard() {
   };
 
   const handleSave = async (savedDeparture: Departure) => {
+    if (!firestore) return;
     const { id, ...departureData } = savedDeparture;
     const isNew = !id;
     
     try {
       if (isNew) {
-          await addDoc(collection(db, 'dispatchSchedules'), departureData);
+          await addDoc(collection(firestore, 'dispatchSchedules'), departureData);
           toast({
               title: "Departure Added",
               description: `A new departure for ${savedDeparture.carrier} has been added.`
@@ -238,7 +229,7 @@ export default function DepartureDashboard() {
                   description: `Trailer ${savedDeparture.trailerNumber} for ${savedDeparture.carrier} has departed.`,
               });
           }
-          await setDoc(doc(db, 'dispatchSchedules', id), departureData, { merge: true });
+          await setDoc(doc(firestore, 'dispatchSchedules', id), departureData, { merge: true });
           if (originalDeparture?.status !== savedDeparture.status) {
             toast({
                 title: "Status Updated",
@@ -301,8 +292,8 @@ export default function DepartureDashboard() {
 
   const handleFileImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-    const departuresCol = collection(db, 'dispatchSchedules');
+    if (!file || !firestore) return;
+    const departuresCol = collection(firestore, 'dispatchSchedules');
 
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -355,7 +346,7 @@ export default function DepartureDashboard() {
         }).filter((d): d is Omit<Departure, 'id'> => d !== null);
 
         if (newDepartures.length > 0) {
-            const batch = writeBatch(db);
+            const batch = writeBatch(firestore);
             newDepartures.forEach(departure => {
                 const docRef = doc(departuresCol); // Create a new doc with a generated id
                 batch.set(docRef, departure);
@@ -388,7 +379,8 @@ export default function DepartureDashboard() {
   };
   
   const handleClearAll = async () => {
-    const departuresCol = collection(db, 'dispatchSchedules');
+    if (!firestore) return;
+    const departuresCol = collection(firestore, 'dispatchSchedules');
     try {
         const querySnapshot = await getDocs(departuresCol);
         if (querySnapshot.empty) {
@@ -400,7 +392,7 @@ export default function DepartureDashboard() {
             return;
         }
 
-        const batch = writeBatch(db);
+        const batch = writeBatch(firestore);
         querySnapshot.forEach(doc => {
             batch.delete(doc.ref);
         });
