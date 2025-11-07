@@ -6,15 +6,16 @@ import { getFirestore } from "firebase/firestore";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  "projectId": "studio-6900668736-45260",
-  "appId": "1:966294973587:web:771815f5f2772a0618f166",
-  "apiKey": "AIzaSyBsDfq1ZyEQSBRYh2SixKZ0IJtH-a9-EtY",
-  "authDomain": "studio-6900668736-45260.firebaseapp.com",
-  "measurementId": "",
-  "messagingSenderId": "966294973587"
+  apiKey: "AIzaSyA24e3_Jrnw5B5xS4aKk3k1E2f9g0h7Y8o",
+  authDomain: "truck-departure-management-a202c.firebaseapp.com",
+  projectId: "truck-departure-management-a202c",
+  storageBucket: "truck-departure-management-a202c.appspot.com",
+  messagingSenderId: "33887532644",
+  appId: "1:33887532644:web:e0f8f8f4a1c5b2a4c1c9e4",
+  measurementId: "G-7E4Y9XQJ1E"
 };
+
 
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
