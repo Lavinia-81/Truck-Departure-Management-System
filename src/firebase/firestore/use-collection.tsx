@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   onSnapshot,
   query,
@@ -17,15 +17,21 @@ export function useCollection<T = any>(
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const initialLoadingDone = useRef(false);
+
   useEffect(() => {
     if (!q) {
       setData(null);
       setIsLoading(false);
       setError(null);
+      initialLoadingDone.current = false;
       return;
     }
 
-    setIsLoading(true);
+    if (!initialLoadingDone.current) {
+      setIsLoading(true);
+    }
+    
     const unsubscribe = onSnapshot(
       q,
       (snapshot: QuerySnapshot) => {
@@ -34,7 +40,10 @@ export function useCollection<T = any>(
           id: doc.id,
         }));
         setData(results);
-        setIsLoading(false);
+        if (!initialLoadingDone.current) {
+          setIsLoading(false);
+          initialLoadingDone.current = true;
+        }
         setError(null);
       },
       (err: FirestoreError) => {
@@ -44,7 +53,16 @@ export function useCollection<T = any>(
       }
     );
 
-    return () => unsubscribe();
+    // Set loading to false once the listener is attached.
+    // This provides a faster perceived load time.
+    if (!initialLoadingDone.current) {
+        setIsLoading(false);
+    }
+
+    return () => {
+      unsubscribe();
+      initialLoadingDone.current = false;
+    }
   }, [q]);
 
   return { data, isLoading, error };

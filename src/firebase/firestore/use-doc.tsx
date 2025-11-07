@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   onSnapshot,
   DocumentReference,
@@ -16,15 +16,21 @@ export function useDoc<T = any>(
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const initialLoadingDone = useRef(false);
+
   useEffect(() => {
     if (!docRef) {
       setData(null);
       setIsLoading(false);
       setError(null);
+      initialLoadingDone.current = false;
       return;
     }
 
-    setIsLoading(true);
+    if (!initialLoadingDone.current) {
+      setIsLoading(true);
+    }
+
     const unsubscribe = onSnapshot(
       docRef,
       (snapshot: DocumentSnapshot) => {
@@ -33,7 +39,10 @@ export function useDoc<T = any>(
         } else {
           setData(null);
         }
-        setIsLoading(false);
+        if (!initialLoadingDone.current) {
+          setIsLoading(false);
+          initialLoadingDone.current = true;
+        }
         setError(null);
       },
       (err: FirestoreError) => {
@@ -42,8 +51,16 @@ export function useDoc<T = any>(
         setIsLoading(false);
       }
     );
+    
+    // Set loading to false once the listener is attached for faster perceived load time.
+    if (!initialLoadingDone.current) {
+        setIsLoading(false);
+    }
 
-    return () => unsubscribe();
+    return () => {
+        unsubscribe();
+        initialLoadingDone.current = false;
+    };
   }, [docRef]);
 
   return { data, isLoading, error };
