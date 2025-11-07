@@ -85,23 +85,30 @@ export default function DisplayPage() {
             setIsScrolling(false);
         }
     };
+    
+    // Use a small delay to allow the DOM to update before checking overflow.
+    const timer = setTimeout(checkOverflow, 100);
 
-    checkOverflow();
     const debouncedCheckOverflow = () => setTimeout(checkOverflow, 100);
 
     window.addEventListener('resize', debouncedCheckOverflow);
-    return () => window.removeEventListener('resize', debouncedCheckOverflow);
+
+    return () => {
+        clearTimeout(timer);
+        window.removeEventListener('resize', debouncedCheckOverflow);
+    };
   }, [departures, isLoadingDepartures]);
 
 
   const renderTableRows = (departuresToRender: Departure[]) => {
+    if (!departuresToRender || departuresToRender.length === 0) return null;
     return departuresToRender.map(d => {
         const carrierStyle = carrierStyles[d.carrier];
         return (
           <TableRow key={d.id} className={cn('transition-colors h-16 md:h-20', statusColors[d.status])}>
             <TableCell>
               <Badge className={cn('flex items-center gap-2 text-base md:text-lg p-2', carrierStyle?.className)}>
-                {carrierStyle.icon}
+                {carrierStyle?.icon}
                  {carrierStyle?.iconUrl && (
                   <div className={carrierStyle.logoClassName}>
                     <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={24} height={24} className="h-auto w-6" />
@@ -126,6 +133,7 @@ export default function DisplayPage() {
   }
 
   const renderMobileCards = (departuresToRender: Departure[]) => {
+    if (!departuresToRender || departuresToRender.length === 0) return null;
     return departuresToRender.map(d => {
       const carrierStyle = carrierStyles[d.carrier];
       return (
@@ -133,7 +141,7 @@ export default function DisplayPage() {
           <CardContent className="p-4 space-y-3">
             <div className="flex justify-between items-center">
               <Badge className={cn('flex items-center gap-2 text-base p-2', carrierStyle?.className)}>
-                  {carrierStyle.icon}
+                  {carrierStyle?.icon}
                   {carrierStyle?.iconUrl && (
                     <div className={carrierStyle.logoClassName}>
                       <Image src={carrierStyle.iconUrl} alt={`${d.carrier} logo`} width={20} height={20} className="h-auto w-5" />
@@ -265,5 +273,3 @@ export default function DisplayPage() {
     </div>
   );
 }
-
-    
