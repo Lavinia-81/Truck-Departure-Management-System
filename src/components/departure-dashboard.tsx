@@ -10,7 +10,7 @@ import { Edit, Trash2, TrafficCone, PlusCircle, Ship, Route } from 'lucide-react
 import { format, parseISO, addMinutes } from 'date-fns';
 import type { Departure, Status } from '@/lib/types';
 import { EditDepartureDialog } from './edit-departure-dialog';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import * as XLSX from 'xlsx';
 import {
