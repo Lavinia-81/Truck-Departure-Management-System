@@ -359,15 +359,6 @@ export default function DepartureDashboard() {
     setIsClearDialogOpen(false);
   };
 
-  if (isLoadingDepartures) {
-     return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-          <Loader2 className="h-12 w-12 animate-spin text-primary" />
-          <p className="mt-4 text-muted-foreground">Loading Dashboard...</p>
-      </div>
-    )
-  }
-
   return (
     <TooltipProvider>
       <div className="flex flex-col h-screen">
@@ -413,7 +404,12 @@ export default function DepartureDashboard() {
                   <TableBody>
                     {isLoadingDepartures && (
                       <TableRow>
-                        <TableCell colSpan={11} className="text-center h-24">Loading departures...</TableCell>
+                        <TableCell colSpan={11} className="text-center h-24">
+                            <div className="flex justify-center items-center">
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                <span>Loading departures...</span>
+                            </div>
+                        </TableCell>
                       </TableRow>
                     )}
                     {!isLoadingDepartures && departures && departures.length > 0 ? (
