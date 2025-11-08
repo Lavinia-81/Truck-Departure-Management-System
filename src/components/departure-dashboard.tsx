@@ -159,18 +159,18 @@ export default function DepartureDashboard() {
     } catch (e: any) {
       console.error(e);
       let description = "Could not retrieve traffic warnings. Please try again.";
-      if (e.message && e.message.includes('429')) {
-        description = "You have reached the API request limit. Please wait one minute before trying again."
-        
-        ;
-      } else if (e.message && (e.message.includes('API key not valid') || e.message.includes('GEMINI_API_KEY'))) {
-        description = "The API key for the AI service is not valid or not configured. Check the GEMINI_API_KEY environment variable.";
+      if (e.message?.includes('429')) {
+        description = "You have reached the API request limit. Please wait one minute before trying again.";
+      } else if (e.message?.includes('API key')) {
+        description = "The API key for the AI service is not valid or not configured. Check the .env file.";
       }
       toast({
         variant: "destructive",
         title: "Error Fetching Route Status",
         description: description,
-      })
+      });
+      // Close the dialog on error
+      setIsRouteStatusDialogOpen(false); 
     } finally {
       setIsRouteStatusLoading(false);
     }
@@ -374,16 +374,11 @@ export default function DepartureDashboard() {
           <Card className="flex-1 flex flex-col overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between gap-2 md:gap-4">
               <CardTitle>Departures</CardTitle>
-              <div className="bg-white p-1.5 rounded-md shadow-sm">
+              <div className="bg-white p-1.5 rounded-md shadow-sm ml-auto">
                   <div className="w-[60px] h-auto md:w-[100px]">
                       <Image src="https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png" alt="The Very Group Logo" width={120} height={47} className="h-auto w-full" />
                   </div>
               </div>
-              <Button size="sm" onClick={handleAddNew} className="ml-auto">
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  <span className="hidden md:inline">Add Departure</span>
-                  <span className="md:hidden">Add</span>
-              </Button>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col overflow-hidden">
               <input type="file" ref={fileInputRef} onChange={handleFileImport} accept=".xlsx, .xls" className="hidden" />
