@@ -373,11 +373,19 @@ export default function DepartureDashboard() {
         <main className="flex-1 flex flex-col space-y-4 p-4 md:p-8 pt-6 overflow-hidden">
           <Card className="flex-1 flex flex-col overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between gap-2 md:gap-4">
-              <CardTitle>Departures</CardTitle>
-              <div className="bg-white p-1.5 rounded-md shadow-sm ml-auto">
-                  <div className="w-[60px] h-auto md:w-[100px]">
-                      <Image src="https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png" alt="The Very Group Logo" width={120} height={47} className="h-auto w-full" />
-                  </div>
+               <div className="flex items-center gap-4">
+                <CardTitle>Departures</CardTitle>
+                <div className="bg-white p-1.5 rounded-md shadow-sm">
+                    <div className="w-[60px] h-auto md:w-[100px]">
+                        <Image src="https://marcommnews.com/wp-content/uploads/2020/05/1200px-Very-Group-Logo-2.svg_-1024x397.png" alt="The Very Group Logo" width={120} height={47} className="h-auto w-full" />
+                    </div>
+                </div>
+              </div>
+              <div className="ml-auto">
+                  <Button onClick={handleAddNew}>
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Add Departure
+                  </Button>
               </div>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col overflow-hidden">
