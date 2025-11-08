@@ -274,47 +274,52 @@ export default function DepartureDashboard() {
         const worksheet = workbook.Sheets[sheetName];
         const json: any[] = XLSX.utils.sheet_to_json(worksheet);
 
-        const newDepartures: Departure[] = json.map((row) => {
-          const collectionTimeValue = row['Collection Time'];
-          if (!collectionTimeValue) return null;
-          
-          let collectionTime;
-          if (typeof collectionTimeValue === 'number') {
-            const parsedDate = XLSX.SSF.parse_date_code(collectionTimeValue);
-            collectionTime = new Date(parsedDate.y, parsedDate.m - 1, parsedDate.d, parsedDate.H, parsedDate.M, parsedDate.S);
-          } else {
-             collectionTime = new Date(collectionTimeValue);
-          }
-          
-          if (isNaN(collectionTime.getTime())) return null;
+        const mappedDepartures = json.map((row): Departure | null => {
+  const collectionTimeValue = row['Collection Time'];
+  if (!collectionTimeValue) return null;
 
-          const getTrimmedString = (value: any): string => (value ? String(value).trim() : '');
+  let collectionTime;
+  if (typeof collectionTimeValue === 'number') {
+    const parsedDate = XLSX.SSF.parse_date_code(collectionTimeValue);
+    collectionTime = new Date(parsedDate.y, parsedDate.m - 1, parsedDate.d, parsedDate.H, parsedDate.M, parsedDate.S);
+  } else {
+    collectionTime = new Date(collectionTimeValue);
+  }
 
-          const carrier = getTrimmedString(row['Carrier']);
-          const destination = getTrimmedString(row['Destination']);
-          const trailerNumber = getTrimmedString(row['Trailer']);
-          const scheduleNumber = getTrimmedString(row['Schedule No.']);
+  if (isNaN(collectionTime.getTime())) return null;
 
-          // Basic validation for required fields
-          if (!carrier || !destination || !trailerNumber || !scheduleNumber) {
-            console.warn('Skipping row due to missing required fields:', row);
-            return null;
-          }
+  const getTrimmedString = (value: any): string => (value ? String(value).trim() : '');
 
-          return {
-            id: new Date().toISOString() + Math.random(), // simple unique id
-            carrier: carrier,
-            destination: destination,
-            via: (row['Via'] === 'N/A' || !row['Via']) ? '' : getTrimmedString(row['Via']),
-            trailerNumber: trailerNumber,
-            collectionTime: collectionTime.toISOString(),
-            bayDoor: (row['Bay'] && row['Bay'] !== 'N/A') ? Number(row['Bay']) : null,
-            sealNumber: (row['Seal No.'] === 'N/A' || !row['Seal No.']) ? '' : getTrimmedString(row['Seal No.']),
-            driverName: (row['Driver'] === 'N/A' || !row['Driver']) ? '' : getTrimmedString(row['Driver']),
-            scheduleNumber: scheduleNumber,
-            status: (getTrimmedString(row['Status']) as Status) || 'Waiting',
-          };
-        }).filter((d): d is Departure => d !== null);
+  const carrier = getTrimmedString(row['Carrier']) as keyof typeof carrierStyles;
+  if (!carrierStyles[carrier]) {
+    console.warn('Invalid carrier:', carrier);
+    return null;
+  }
+  const destination = getTrimmedString(row['Destination']);
+  const trailerNumber = getTrimmedString(row['Trailer']);
+  const scheduleNumber = getTrimmedString(row['Schedule No.']);
+
+  if (!carrier || !destination || !trailerNumber || !scheduleNumber) {
+    console.warn('Skipping row due to missing required fields:', row);
+    return null;
+  }
+
+  return {
+    id: new Date().toISOString() + Math.random(),
+    carrier: carrier as Departure['carrier'],
+    destination,
+    via: row['Via'] === 'N/A' || !row['Via'] ? '' : getTrimmedString(row['Via']),
+    trailerNumber,
+    collectionTime: collectionTime.toISOString(),
+    bayDoor: (row['Bay'] && row['Bay'] !== 'N/A') ? Number(row['Bay']) : null,
+    sealNumber: (row['Seal No.'] === 'N/A' || !row['Seal No.']) ? '' : getTrimmedString(row['Seal No.']),
+    driverName: (row['Driver'] === 'N/A' || !row['Driver']) ? '' : getTrimmedString(row['Driver']),
+    scheduleNumber,
+    status: (getTrimmedString(row['Status']) as Status) || 'Waiting',
+  };
+});
+
+const newDepartures: Departure[] = mappedDepartures.filter((d): d is Departure => d !== null);
 
         if (newDepartures.length > 0) {
             setDepartures(prev => [...prev, ...newDepartures].sort((a, b) => new Date(a.collectionTime).getTime() - new Date(b.collectionTime).getTime()));
